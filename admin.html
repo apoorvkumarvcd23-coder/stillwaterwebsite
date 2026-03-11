@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Bridge | Stillwater Command Center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<body style="display: flex; flex-direction: column; min-height: 100vh;">
+
+  <header class="header">
+    <a href="/" class="header-logo">Stillwater</a>
+    <a href="/logout" class="btn btn-solid" style="padding: 0.5rem 1.5rem; font-size: 0.75rem;">Disembark</a>
+  </header>
+
+  <main class="container text-center" style="margin-top: 10rem; flex: 1;">
+    <span class="text-caption fade-up">Authorized Personnel Only</span>
+    <h1 class="text-display fade-up" style="margin-top: 1rem; color: var(--color-accent); font-size: clamp(2rem, 5vw, 4rem);">The Bridge</h1>
+    <p class="fade-up" style="max-width: 600px; margin: 2rem auto 4rem; color: var(--color-text-secondary); font-size: 1.125rem;">
+      Welcome to the Administrative Command Center. Here you can monitor bio-resonance telemetry and manage the digital sanctuary.
+    </p>
+    
+    <div class="grid-2 fade-up">
+      <div style="border: 1px solid rgba(0, 229, 255, 0.2); padding: 3rem; text-align: left;">
+        <h3 class="text-h2" style="font-size: 1.5rem; margin-bottom: 1rem;">Active Sessions</h3>
+        <p style="color: var(--color-text-secondary); font-size: 2rem;">243 Users in Recovery</p>
+      </div>
+      <div style="border: 1px solid rgba(0, 229, 255, 0.2); padding: 3rem; text-align: left;">
+        <h3 class="text-h2" style="font-size: 1.5rem; margin-bottom: 1rem;">System Status</h3>
+        <p style="color: var(--color-accent); font-size: 1.25rem;">● All Resonance Frequencies Nominal</p>
+      </div>
+    </div>
+    
+    <div class="grid-2 fade-up" style="margin-top: 2rem; transition-delay: 0.2s;">
+      <div style="border: 1px solid rgba(0, 229, 255, 0.2); padding: 3rem; text-align: left; background: rgba(0, 229, 255, 0.05);">
+        <h3 class="text-h2" style="font-size: 1.5rem; margin-bottom: 1rem;">Fundraising Override</h3>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Manually update the public aggregate fundraising amount.</p>
+        <form action="/admin/update-funds" method="POST" style="display: flex; gap: 1rem; max-width: 500px;">
+          <div class="form-group" style="flex: 1; margin: 0;">
+            <input type="number" id="fundAmount" name="fundAmount" class="form-input" placeholder=" " required>
+            <label for="fundAmount" class="form-label" style="background: var(--color-bg-primary);">New Amount ($)</label>
+          </div>
+          <button type="submit" class="btn btn-solid" style="padding: 0 2rem; height: auto;">Update</button>
+        </form>
+      </div>
+
+      <div style="border: 1px solid rgba(0, 229, 255, 0.2); padding: 3rem; text-align: left; background: rgba(0, 229, 255, 0.05);">
+        <h3 class="text-h2" style="font-size: 1.5rem; margin-bottom: 1rem;">Waitlist Override</h3>
+        <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Manually update the base waitlist counter on the homepage.</p>
+        <form action="/admin/update-waitlist" method="POST" style="display: flex; gap: 1rem; max-width: 500px;">
+          <div class="form-group" style="flex: 1; margin: 0;">
+            <input type="number" id="waitlistCount" name="waitlistCount" class="form-input" placeholder=" " required>
+            <label for="waitlistCount" class="form-label" style="background: var(--color-bg-primary);">New Count</label>
+          </div>
+          <button type="submit" class="btn btn-solid" style="padding: 0 2rem; height: auto;">Update</button>
+        </form>
+      </div>
+    </div>
+    <div class="fade-up" style="margin-top: 2rem; transition-delay: 0.3s; border: 1px solid rgba(0, 229, 255, 0.2); padding: 3rem; text-align: left; background: rgba(0, 229, 255, 0.05);">
+      <h3 class="text-h2" style="font-size: 1.5rem; margin-bottom: 1rem;">Trust Indicators Override</h3>
+      <p style="color: var(--color-text-secondary); margin-bottom: 2rem;">Manually update the statistics displayed in the homepage trust banner.</p>
+      
+      <form action="/admin/update-trust-stats" method="POST" class="grid-2" style="gap: 1.5rem;">
+        <div class="form-group" style="margin: 0;">
+          <input type="text" id="centresCount" name="centresCount" class="form-input" placeholder=" " required value="40K+">
+          <label for="centresCount" class="form-label" style="background: var(--color-bg-primary);">Wellness Centres</label>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <input type="text" id="touristsCount" name="touristsCount" class="form-input" placeholder=" " required value="600K">
+          <label for="touristsCount" class="form-label" style="background: var(--color-bg-primary);">Annual Tourists</label>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <input type="text" id="providersCount" name="providersCount" class="form-input" placeholder=" " required value="4">
+          <label for="providersCount" class="form-label" style="background: var(--color-bg-primary);">Verified Providers</label>
+        </div>
+        <div class="form-group" style="margin: 0;">
+          <input type="text" id="authenticityPct" name="authenticityPct" class="form-input" placeholder=" " required value="100%">
+          <label for="authenticityPct" class="form-label" style="background: var(--color-bg-primary);">Authenticity</label>
+        </div>
+        <div style="grid-column: 1 / -1; margin-top: 1rem;">
+          <button type="submit" class="btn btn-solid" style="padding: 1rem 3rem;">Update Indicators</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+
+  <footer class="footer container" style="margin-top: auto;">
+    <div class="footer-bottom">
+      <span>&copy; 2026 Stillwater Digital Sanctuary. All rights reserved.</span>
+    </div>
+  </footer>
+
+  <script src="js/shared.js"></script>
+</body>
+</html>

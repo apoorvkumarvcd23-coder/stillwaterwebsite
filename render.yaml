@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: stillwater-sanctuary
+    env: node
+    plan: free # Change to 'starter' if you need more resources
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.0.0
+      - key: DB_PATH
+        value: /data/stillwater.sqlite
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: GOOGLE_CLIENT_ID
+        sync: false # Set in Render Dashboard
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false # Set in Render Dashboard
+      - key: ADMIN_EMAIL
+        sync: false # Set in Render Dashboard
+    disk:
+      name: stillwater-data
+      mountPath: /data
+      sizeGB: 1
