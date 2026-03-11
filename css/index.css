@@ -424,3 +424,86 @@ img {
   text-transform: uppercase;
   letter-spacing: 0.1em;
 }
+
+/* =====================
+   Mobile Responsive
+   ===================== */
+
+/* Reduce section vertical padding on mobile */
+@media (max-width: 767px) {
+  .section {
+    padding: 4rem 0;
+  }
+
+  /* Footer links stack properly */
+  .footer .grid-2 > div:last-child {
+    flex-direction: column;
+    gap: 2rem;
+    justify-content: flex-start;
+  }
+
+  /* Footer bottom wraps on very small screens */
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  /* Hero counter font size */
+  .hero-content p[style] {
+    font-size: 1.1rem !important;
+  }
+
+  /* Reduce vision image height */
+  .vision-image-wrapper {
+    height: 320px;
+  }
+
+  /* Prevent quote section overflow */
+  .text-h2 {
+    word-break: break-word;
+  }
+
+  /* Team card bio max-height bump for mobile hover */
+  .team-card:hover .team-bio {
+    max-height: 1200px;
+  }
+
+  /* Trust banner grid: 2 cols on mobile, already set, ensure spacing */
+  .trust-banner .grid-4 {
+    gap: 1.5rem;
+  }
+
+  /* Partner cards padding reduction */
+  .partner-card {
+    padding: 2rem;
+  }
+
+  /* Reduce menu-drawer left padding for small screens */
+  .menu-drawer-left {
+    padding: 5% 8%;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .trust-banner .grid-4 {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .hero-content p[style] {
+    font-size: 1rem !important;
+  }
+
+  .section {
+    padding: 3rem 0;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
