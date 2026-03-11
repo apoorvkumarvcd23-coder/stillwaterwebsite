@@ -4,6 +4,7 @@ const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const path = require('path');
+const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
 const SQLiteStore = require('connect-sqlite3')(session);
 
@@ -13,6 +14,14 @@ const PORT = process.env.PORT || 3000;
 // === DATABASE CONFIGURATION ===
 // Use persistent path in production if available (e.g., /data/stillwater.sqlite on Render)
 const DB_PATH = process.env.DB_PATH || './stillwater.sqlite';
+
+// Ensure the directory for the database exists (critical for Render persistent disk on first boot)
+const DB_DIR = path.dirname(DB_PATH);
+if (!fs.existsSync(DB_DIR)) {
+  fs.mkdirSync(DB_DIR, { recursive: true });
+  console.log(`Created database directory: ${DB_DIR}`);
+}
+
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
     console.error('Error opening database', err.message);
