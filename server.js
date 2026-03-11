@@ -12,22 +12,27 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // === DATABASE CONFIGURATION ===
-// Use persistent path in production if available (e.g., /data/stillwater.sqlite on Render)
-const DB_PATH = process.env.DB_PATH || './stillwater.sqlite';
-
-// Ensure the directory for the database exists (critical for Render persistent disk on first boot)
+// Try the persistent path first (e.g. /data on Render), fall back to local
+let DB_PATH = process.env.DB_PATH || './stillwater.sqlite';
 const DB_DIR = path.dirname(DB_PATH);
-if (!fs.existsSync(DB_DIR)) {
-  fs.mkdirSync(DB_DIR, { recursive: true });
-  console.log(`Created database directory: ${DB_DIR}`);
+
+// Gracefully ensure the directory exists — fall back to local if it fails
+try {
+  if (DB_DIR !== '.' && !fs.existsSync(DB_DIR)) {
+    fs.mkdirSync(DB_DIR, { recursive: true });
+    console.log(`Created database directory: ${DB_DIR}`);
+  }
+} catch (err) {
+  console.warn(`Warning: Could not create DB directory '${DB_DIR}'. Falling back to local path. (${err.message})`);
+  DB_PATH = './stillwater.sqlite';
 }
+
+console.log(`[DB] Using database at: ${DB_PATH}`);
 
 const db = new sqlite3.Database(DB_PATH, (err) => {
   if (err) {
     console.error('Error opening database', err.message);
   } else {
-    // Create users table if it doesn't exist
-    // Includes a default 'customer' role
     db.run(`CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       name TEXT,
@@ -35,16 +40,12 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
       role TEXT DEFAULT 'customer'
     )`);
 
-    // Create a generic settings table to store application state like fundraising amount
     db.run(`CREATE TABLE IF NOT EXISTS settings (
       key TEXT PRIMARY KEY,
       value TEXT
     )`, () => {
-      // Seed the default fundraising amount if it doesn't exist
       db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('fundraising_amount', '1250000')`);
       db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('waitlist_count', '842')`);
-      
-      // Trust Indicators
       db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('centres_count', '40K+')`);
       db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('tourists_count', '600K')`);
       db.run(`INSERT OR IGNORE INTO settings (key, value) VALUES ('providers_count', '4')`);
@@ -53,22 +54,23 @@ const db = new sqlite3.Database(DB_PATH, (err) => {
   }
 });
 
-// Middleware for parsing URL-encoded form data
+// Middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Session Configuration
+const resolvedDbDir = path.dirname(DB_PATH);
 app.use(session({
   store: new SQLiteStore({
-    db: path.basename(DB_PATH), // The filename part
-    table: 'sessions',       
-    dir: path.dirname(DB_PATH)  // The directory part
+    db: path.basename(DB_PATH),
+    table: 'sessions',
+    dir: resolvedDbDir
   }),
-  secret: process.env.SESSION_SECRET || 'stillwater-digital-sanctuary-secret',
+  secret: process.env.SESSION_SECRET || 'stillwater-secret',
   resave: false,
-  saveUninitialized: false, // Don't create sessions until something is stored
+  saveUninitialized: false,
   cookie: {
-    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days in milliseconds
+    maxAge: 30 * 24 * 60 * 60 * 1000
   }
 }));
 
@@ -76,24 +78,27 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serialize user ID to the session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user from the database by ID
 passport.deserializeUser((id, done) => {
   db.get("SELECT * FROM users WHERE id = ?", [id], (err, row) => {
     done(err, row);
   });
 });
 
+// Build the OAuth callback URL — use absolute URL in production
+const CALLBACK_URL = process.env.BASE_URL
+  ? `${process.env.BASE_URL}/auth/google/callback`
+  : '/auth/google/callback';
+
 // Avoid crashes if Google OAuth credentials aren't set up yet
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
   passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: "/auth/google/callback"
+    callbackURL: CALLBACK_URL
   },
   function(accessToken, refreshToken, profile, cb) {
     const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
