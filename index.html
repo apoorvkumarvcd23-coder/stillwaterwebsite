@@ -222,6 +222,12 @@
     .partner-conditions strong {
       color: var(--color-text-primary);
     }
+    /* Fix background-attachment: fixed on mobile (broken on iOS Safari) */
+    @media (max-width: 767px) {
+      .hero {
+        background-attachment: scroll;
+      }
+    }
   </style>
 </head>
 <body>
@@ -259,7 +265,7 @@
 
   <!-- Hero Section -->
   <section class="hero">
-    <video class="hero-video" autoplay loop muted playsinline>
+    <video class="hero-video" id="heroVideo" autoplay loop muted playsinline webkit-playsinline>
       <source src="visionBGvideo.mp4" type="video/mp4">
     </video>
     <div class="hero-content">
@@ -483,6 +489,29 @@
   </footer>
 
   <script src="js/shared.js"></script>
+  <script>
+    // Force video autoplay on mobile browsers
+    (function() {
+      const video = document.getElementById('heroVideo');
+      if (!video) return;
+      // Attempt to play immediately
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay blocked — try again on first user interaction
+          const tryPlay = () => {
+            video.play();
+            document.removeEventListener('touchstart', tryPlay);
+            document.removeEventListener('click', tryPlay);
+            document.removeEventListener('scroll', tryPlay);
+          };
+          document.addEventListener('touchstart', tryPlay, { once: true, passive: true });
+          document.addEventListener('click', tryPlay, { once: true });
+          document.addEventListener('scroll', tryPlay, { once: true, passive: true });
+        });
+      }
+    })();
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
       // 1. Fetch Waitlist
