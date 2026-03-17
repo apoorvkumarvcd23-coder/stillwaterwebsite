@@ -520,19 +520,32 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/auth.html" }),
   (req, res) => {
+    let redirectTo = "/portal.html";
+
     const returnTo = req.session.returnTo;
-    if (returnTo) {
-      delete req.session.returnTo;
-      return res.redirect(returnTo);
+    if (returnTo && typeof returnTo === "string" && returnTo.startsWith("/")) {
+      redirectTo = returnTo;
     }
 
     if (req.user.role === "admin") {
       console.log(`[AUTH] Admin authenticated: ${req.user.email}`);
-      return res.redirect("/admin.html");
+      if (!returnTo) {
+        redirectTo = "/admin.html";
+      }
+    } else {
+      console.log(`[AUTH] Customer authenticated: ${req.user.email}`);
     }
 
-    console.log(`[AUTH] Customer authenticated: ${req.user.email}`);
-    return res.redirect("/");
+    delete req.session.returnTo;
+
+    // Ensure the session is persisted before redirecting to protected pages.
+    req.session.save((err) => {
+      if (err) {
+        console.error("Failed to save session after OAuth callback:", err);
+        return res.redirect("/auth.html");
+      }
+      return res.redirect(redirectTo);
+    });
   },
 );
 
