@@ -22,6 +22,17 @@ if (!DATABASE_URL) {
 }
 
 const isProd = process.env.NODE_ENV === "production";
+const rawCookieDomain = (process.env.COOKIE_DOMAIN || "").trim();
+const cookieDomain =
+  rawCookieDomain && !/\.?(onrender\.com)$/i.test(rawCookieDomain)
+    ? rawCookieDomain
+    : undefined;
+
+if (rawCookieDomain && !cookieDomain) {
+  console.warn(
+    "COOKIE_DOMAIN is set to a shared domain and will be ignored. Using host-only session cookies.",
+  );
+}
 
 const pool = new Pool({
   connectionString: DATABASE_URL,
@@ -175,7 +186,7 @@ app.use(
       maxAge: 30 * 24 * 60 * 60 * 1000,
       sameSite: "lax",
       secure: isProd,
-      domain: process.env.COOKIE_DOMAIN || undefined,
+      domain: cookieDomain,
     },
   }),
 );
