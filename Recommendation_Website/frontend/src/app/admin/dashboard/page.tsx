@@ -8,7 +8,11 @@ export default function AdminDashboard() {
     const [stats, setStats] = useState<any>(null);
 
     useEffect(() => {
-        fetch('http://localhost:3001/api/admin/dashboard')
+        const apiBase =
+            process.env.NEXT_PUBLIC_API_BASE_URL ||
+            'http://localhost:3000/recommendation/api';
+
+        fetch(`${apiBase}/admin/dashboard`)
             .then(res => res.json())
             .then(data => setStats(data))
             .catch(console.error);
