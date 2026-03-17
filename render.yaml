@@ -6,6 +6,7 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     dockerContext: .
+    healthCheckPath: /api/funds
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -42,6 +43,7 @@ services:
     plan: free
     dockerfilePath: ./Recommendation_Website/backend/Dockerfile
     dockerContext: ./Recommendation_Website/backend
+    healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -76,6 +78,7 @@ services:
     plan: free
     dockerfilePath: ./Recommendation_Website/frontend/Dockerfile
     dockerContext: ./Recommendation_Website/frontend
+    healthCheckPath: /recommendation
     # These are consumed as Docker build ARGs (baked into the Next.js bundle)
     # Set them to your main Render URL so browser fetches go through the proxy
     envVars:
