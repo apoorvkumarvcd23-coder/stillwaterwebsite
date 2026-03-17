@@ -1,0 +1,23 @@
+Assessment Response JSON: { success: true, userId: 6 }
+Details: undefined
+Lead Response: { error: 'Failed to save lead information' }
+Rec Response: {
+  id: 6,
+  userId: 6,
+  sharan_score: 0,
+  eye_yoga_score: 16,
+  healy_score: 0,
+  retreat_score: 0,
+  primary_recommendation: 'EYE_YOGA',
+  secondary_recommendation: 'SHARAN',
+  primary_explanation: 'Based on your responses:\n' +
+    '\n' +
+    '• High screen time (> 6 hours/day)\n' +
+    '• Condition: Eye strain\n' +
+    '• Symptom: tired eyes\n' +
+    '• Goal: improve vision\n' +
+    '\n' +
+    'We recommend Amar Eye Yoga.',
+  secondary_explanation: 'We recommend SHARAN based on your general wellness profile.',
+  createdAt: '2026-03-12T13:50:44.984Z'
+}

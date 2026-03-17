@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+.git
+.env
+.env.*
+Recommendation_Website/**/node_modules
+Recommendation_Website/**/dist
+Recommendation_Website/**/.next
+Recommendation_Website/**/.env
+Recommendation_Website/**/.env.*

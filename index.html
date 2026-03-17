@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stillwater | Holistic Healing & Stress Management</title>
+    <meta
+      name="description"
+      content="Discover a premium holistic healing platform for stress management, inner peace, and wellness."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/index.css" />
+    <style>
+      /* Home Page Specific Styles */
+      .hero {
+        height: 100vh;
+        position: relative;
+        background-image: url("images/hero-bg.png");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+      }
+
+      .hero-video {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: 0;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(3, 20, 24, 0.5), rgba(3, 20, 24, 0.9));
+        z-index: 5;
+      }
+
+      .hero-content {
+        position: relative;
+        z-index: 10;
+        max-width: 800px;
+        padding: 0 5%;
+      }
+
+      .hero-subtitle {
+        display: block;
+        margin-bottom: 2rem;
+      }
+
+      .vision-section {
+        background-color: var(--color-bg-primary);
+        position: relative;
+      }
+
+      .vision-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      @media (min-width: 992px) {
+        .vision-grid {
+          grid-template-columns: 5fr 7fr;
+          gap: 8rem;
+        }
+      }
+
+      .vision-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        overflow: hidden;
+      }
+
+      .vision-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: brightness(0.85);
+        transition: filter 1s var(--transition-smooth);
+      }
+
+      .vision-image-wrapper:hover .vision-image {
+        filter: brightness(1);
+      }
+
+      .info-card {
+        border-left: 1px solid var(--color-accent);
+        padding-left: 2rem;
+        margin-top: 3rem;
+      }
+
+      /* Partners Section Styles */
+      .partners-section {
+        background-color: var(--color-bg-primary);
+        padding-top: 6rem;
+        padding-bottom: 6rem;
+        border-top: 1px solid rgba(240, 248, 255, 0.05);
+      }
+
+      .partners-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        margin-top: 4rem;
+        align-items: start;
+      }
+
+      @media (min-width: 992px) {
+        .partners-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .partner-card {
+        background-color: var(--color-bg-secondary);
+        padding: 3rem;
+        text-align: left;
+        transition: var(--transition-smooth);
+        border: 1px solid transparent;
+        display: flex;
+        flex-direction: column;
+        height: fit-content;
+        text-decoration: none;
+      }
+
+      .partner-card:hover {
+        border-color: var(--color-accent);
+        transform: translateY(-5px);
+      }
+
+      .partner-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .partner-logo {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        color: var(--color-accent);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        margin: 0;
+      }
+
+      .partner-badge {
+        background: rgba(0, 229, 255, 0.1);
+        color: var(--color-accent);
+        padding: 0.4rem 1rem;
+        border-radius: 100px;
+        font-size: 0.8rem;
+        font-weight: 500;
+      }
+
+      .partner-subtitle {
+        font-size: 1.1rem;
+        color: var(--color-text-primary);
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        margin-bottom: 0;
+      }
+
+      .partner-details {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        transition:
+          max-height 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+          opacity 0.4s ease,
+          margin-top 0.4s ease;
+        transition-delay: 0s;
+        margin-top: 0;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .partner-card:hover .partner-details {
+        max-height: 600px;
+        opacity: 1;
+        margin-top: 1.5rem;
+        transition-delay: 0.3s;
+      }
+
+      .partner-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+      }
+
+      .partner-desc {
+        color: var(--color-text-secondary);
+        line-height: 1.6;
+        margin-bottom: 2rem;
+        flex-grow: 1;
+      }
+
+      .partner-conditions {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.25rem;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        color: var(--color-text-secondary);
+        border-left: 2px solid var(--color-accent);
+      }
+
+      .partner-conditions strong {
+        color: var(--color-text-primary);
+      }
+      /* Fix background-attachment: fixed on mobile (broken on iOS Safari) */
+      @media (max-width: 767px) {
+        .hero {
+          background-attachment: scroll;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <header class="header">
+      <button class="menu-btn">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M3 12H21"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 6H21"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <path
+            d="M3 18H21"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+        Menu
+      </button>
+      <a href="index.html" class="header-logo">Stillwater</a>
+      <div
+        id="authActions"
+        style="display: flex; gap: 0.75rem; align-items: center"
+      >
+        <div id="authMenuWrap" style="position: relative; display: inline-flex">
+          <button
+            id="authMenuButton"
+            style="
+              padding: 0;
+              font-size: 0.85rem;
+              color: var(--color-text-primary);
+              background: transparent;
+              border: none;
+              cursor: pointer;
+              display: none;
+            "
+          >
+            Hi
+          </button>
+          <div
+            id="authMenu"
+            style="
+              position: absolute;
+              top: 2rem;
+              right: 0;
+              min-width: 160px;
+              background: var(--color-bg-secondary);
+              border: 1px solid rgba(255, 255, 255, 0.08);
+              border-radius: 12px;
+              padding: 0.4rem;
+              display: none;
+              box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+            "
+          >
+            <a
+              id="btnLogout"
+              href="/logout"
+              style="
+                display: block;
+                padding: 0.5rem 0.75rem;
+                color: var(--color-text-primary);
+                text-decoration: none;
+                font-size: 0.8rem;
+              "
+              >Log out</a
+            >
+          </div>
+        </div>
+        <a
+          href="auth.html"
+          id="btnLogin"
+          class="btn btn-solid"
+          style="padding: 0.5rem 1.5rem; font-size: 0.75rem"
+          >Login</a
+        >
+        <a
+          href="admin.html"
+          id="btnAdmin"
+          class="btn btn-solid"
+          style="padding: 0.5rem 1.5rem; font-size: 0.75rem; display: none"
+          >Admin Dashboard</a
+        >
+        <a
+          href="/recommendation"
+          id="btnRecommendation"
+          class="btn btn-solid"
+          style="padding: 0.5rem 1.5rem; font-size: 0.75rem; display: none"
+          >Wellness Assessment</a
+        >
+      </div>
+    </header>
+
+    <!-- Full Screen Drawer Menu -->
+    <div class="menu-drawer">
+      <button class="menu-drawer-close">Close ✕</button>
+      <div class="menu-drawer-left">
+        <ul class="menu-list">
+          <li><a href="index.html">Vision</a></li>
+          <li><a href="about.html">About Us</a></li>
+          <li><a href="teams.html">The Team</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="fundraising.html">Fundraising</a></li>
+          <li><a href="careers.html">Careers</a></li>
+          <li><a href="auth.html">Waitlist</a></li>
+        </ul>
+      </div>
+      <div
+        class="menu-drawer-right"
+        style="background-image: url(&quot;images/spa-bg.png&quot;)"
+      ></div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <video
+        class="hero-video"
+        id="heroVideo"
+        autoplay
+        loop
+        muted
+        playsinline
+        webkit-playsinline
+      >
+        <source src="visionBGvideo.mp4" type="video/mp4" />
+      </video>
+      <div class="hero-content">
+        <span class="text-caption hero-subtitle fade-up"
+          >A Sanctuary for Inner Peace</span
+        >
+        <h1
+          class="text-display fade-up"
+          style="transition-delay: 0.2s; margin-bottom: 1.5rem"
+        >
+          Redefining Holistic Healing
+        </h1>
+        <p
+          class="fade-up"
+          style="
+            font-size: 1.5rem;
+            font-family: var(--font-heading);
+            color: var(--color-accent);
+            margin-bottom: 2rem;
+            transition-delay: 0.3s;
+          "
+        >
+          <span id="waitlistCounter">...</span> individuals currently healing.
+        </p>
+        <div class="fade-up" style="transition-delay: 0.4s">
+          <a href="#vision" class="btn btn-solid">Discover Our Vision</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust Indicators Banner -->
+    <section class="trust-banner">
+      <div class="grid-4">
+        <div class="trust-item fade-up">
+          <span class="trust-value" id="trustCentres">...</span>
+          <span class="trust-label">Wellness Centres</span>
+        </div>
+        <div class="trust-item fade-up" style="transition-delay: 0.1s">
+          <span class="trust-value" id="trustTourists">...</span>
+          <span class="trust-label">Annual Tourists</span>
+        </div>
+        <div class="trust-item fade-up" style="transition-delay: 0.2s">
+          <span class="trust-value" id="trustProviders">...</span>
+          <span class="trust-label">Verified Providers</span>
+        </div>
+        <div class="trust-item fade-up" style="transition-delay: 0.3s">
+          <span class="trust-value" id="trustAuthenticity">...</span>
+          <span class="trust-label">Authentic</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Vision Section -->
+    <section id="vision" class="section vision-section container">
+      <div class="vision-grid">
+        <div class="vision-text fade-up">
+          <span class="text-caption">The Concept</span>
+          <h2 class="text-h1" style="margin: 1.5rem 0">
+            Escaping the<br />Modern Stress.
+          </h2>
+          <p
+            style="
+              color: var(--color-text-secondary);
+              margin-bottom: 2rem;
+              font-size: 1.125rem;
+            "
+          >
+            In an era defined by constant connectivity and pressure, we have
+            lost touch with our natural state of being. Stillwater is not just a
+            destination; it's a movement towards intentional living, holistic
+            healing, and profound stress relief.
+          </p>
+
+          <div class="info-card fade-up">
+            <h3
+              class="text-h2"
+              style="
+                font-size: 1.5rem;
+                margin-bottom: 1rem;
+                color: var(--color-accent);
+              "
+            >
+              Holistic Approach
+            </h3>
+            <p style="color: var(--color-text-secondary)">
+              Integrating mind, body, and spirit through clinically backed
+              practices and ancient wisdom. From sound baths and meditation to
+              deep tissue restoration.
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="vision-image-wrapper fade-up"
+          style="transition-delay: 0.2s"
+        >
+          <img
+            src="images/spa-bg.png"
+            alt="Holistic Spa Environment"
+            class="vision-image"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission & Vision Section -->
+    <section
+      class="section"
+      style="
+        background-color: var(--color-bg-secondary);
+        border-top: 1px solid rgba(0, 229, 255, 0.1);
+        border-bottom: 1px solid rgba(0, 229, 255, 0.1);
+      "
+    >
+      <div class="container">
+        <div class="grid-2">
+          <!-- Mission -->
+          <div class="fade-up" style="padding: 2rem 0">
+            <span class="text-caption">What Drives Us</span>
+            <h2
+              class="text-h1"
+              style="margin: 1.5rem 0; font-size: clamp(1.75rem, 3vw, 2.5rem)"
+            >
+              Our Mission
+            </h2>
+            <p
+              style="
+                color: var(--color-text-secondary);
+                font-size: 1.05rem;
+                line-height: 1.85;
+              "
+            >
+              To help individuals understand the deeper causes of stress,
+              emotional imbalance, and mental fatigue — and to support them in
+              building a healthier relationship with their mind and body.
+            </p>
+          </div>
+          <!-- Vision -->
+          <div
+            class="fade-up"
+            style="
+              padding: 2rem 0;
+              border-left: 1px solid rgba(0, 229, 255, 0.15);
+              padding-left: 3rem;
+            "
+            class="fade-up"
+          >
+            <span class="text-caption">Where We're Headed</span>
+            <h2
+              class="text-h1"
+              style="margin: 1.5rem 0; font-size: clamp(1.75rem, 3vw, 2.5rem)"
+            >
+              Our Vision
+            </h2>
+            <p
+              style="
+                color: var(--color-text-secondary);
+                font-size: 1.05rem;
+                line-height: 1.85;
+              "
+            >
+              A world where mental and emotional well-being are approached with
+              understanding, compassion, and awareness — where people feel
+              empowered to take meaningful steps toward lasting balance and
+              inner clarity.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Verified Healing Partners Section -->
+    <section id="partners" class="section partners-section container">
+      <div class="text-center fade-up">
+        <span class="text-caption">Our Ecosystem</span>
+        <h2 class="text-h1" style="margin-top: 1rem">
+          Verified Healing Partners
+        </h2>
+        <p
+          style="
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            color: var(--color-text-secondary);
+            font-size: 1.125rem;
+          "
+        >
+          We collaborate with world-renowned practitioners and organizations to
+          deliver a comprehensive holistic healing experience.
+        </p>
+      </div>
+
+      <div class="partners-grid fade-up" style="transition-delay: 0.2s">
+        <!-- SHARAN -->
+        <a
+          href="https://sharan-india.org/"
+          target="_blank"
+          class="partner-card"
+        >
+          <div class="partner-header">
+            <h3 class="partner-logo">SHARAN</h3>
+            <span class="partner-badge">Nari Shakti Award Winner</span>
+          </div>
+          <p class="partner-subtitle">
+            Plant-Based Nutrition & Disease Reversal
+          </p>
+          <div class="partner-details">
+            <div class="partner-meta">
+              <span>⭐ Rating: 4.9 (312 reviews)</span>
+              <span>📍 Location: Pan India & Online</span>
+              <span>💎 Price: ₹2,500 per consultation</span>
+            </div>
+            <p class="partner-desc">
+              Dr. Nandita Shah's pioneering organization reverses chronic
+              diseases through whole-food plant-based nutrition, lifestyle
+              medicine, and compassionate community support.
+            </p>
+            <div class="partner-conditions">
+              <strong>Conditions:</strong> Diabetes, Heart Disease, Obesity,
+              Autoimmune
+            </div>
+          </div>
+        </a>
+
+        <!-- Amar Eye Yoga -->
+        <a href="https://amareye.yoga" target="_blank" class="partner-card">
+          <div class="partner-header">
+            <h3 class="partner-logo">Amar Eye Yoga</h3>
+            <span class="partner-badge">IIT Alumni</span>
+          </div>
+          <p class="partner-subtitle">Eye Yoga & Vision Healing</p>
+          <div class="partner-details">
+            <div class="partner-meta">
+              <span>⭐ Rating: 4.8 (187 reviews)</span>
+              <span>📍 Location: Online & Bengaluru</span>
+              <span>💎 Price: ₹1,800 per session</span>
+            </div>
+            <p class="partner-desc">
+              Ancient yogic techniques combined with modern understanding to
+              naturally restore and strengthen vision. Proven results for
+              myopia, hyperopia, and eye strain.
+            </p>
+            <div class="partner-conditions">
+              <strong>Conditions:</strong> Myopia, Hyperopia, Eye Strain,
+              Computer Vision Syndrome
+            </div>
+          </div>
+        </a>
+
+        <!-- Quantum Healing Devices -->
+        <div class="partner-card">
+          <div class="partner-header">
+            <h3 class="partner-logo">Healy Quantum</h3>
+            <span class="partner-badge">German Technology</span>
+          </div>
+          <p class="partner-subtitle">Bioenergetic Technology</p>
+          <div class="partner-details">
+            <div class="partner-meta">
+              <span>⭐ Rating: 4.7 (143 reviews)</span>
+              <span>📍 Location: Pan India</span>
+              <span>💎 Price: ₹3,500 per session</span>
+            </div>
+            <p class="partner-desc">
+              FDA-cleared German Healy device delivers individualized
+              microcurrent frequency programs for pain, sleep, and mental
+              balance. Cutting-edge meets ancient energy healing.
+            </p>
+            <div class="partner-conditions">
+              <strong>Conditions:</strong> Chronic Pain, Sleep Disorders,
+              Anxiety, Fatigue
+            </div>
+          </div>
+        </div>
+
+        <!-- Divine Veda Retreat -->
+        <div class="partner-card">
+          <div class="partner-header">
+            <h3 class="partner-logo">Divine Veda Retreat</h3>
+            <span class="partner-badge">Top Rated Retreat</span>
+          </div>
+          <p class="partner-subtitle">Ayurveda & Wellness Retreat</p>
+          <div class="partner-details">
+            <div class="partner-meta">
+              <span>⭐ Rating: 4.95 (256 reviews)</span>
+              <span>📍 Location: Kanakpura, Bengaluru</span>
+              <span>💎 Price: ₹12,000 per night</span>
+            </div>
+            <p class="partner-desc">
+              Nestled in the serene forests of Kanakpura, Bengaluru. Immersive
+              Ayurvedic treatments, Panchakarma detox, yoga, and sattvic meals
+              in a nature sanctuary.
+            </p>
+            <div class="partner-conditions">
+              <strong>Conditions:</strong> Stress, Detox, Spiritual Healing,
+              Lifestyle Reset
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="section container"
+      style="text-align: center; max-width: 900px; padding-top: 5rem"
+    >
+      <h2 class="text-h2 fade-up">
+        "Healing is a matter of time, but it is sometimes also a matter of
+        opportunity."
+      </h2>
+      <span
+        class="text-caption fade-up"
+        style="display: block; margin-top: 2rem; transition-delay: 0.2s"
+        >— Hippocrates</span
+      >
+      <div style="margin-top: 4rem" class="fade-up">
+        <a href="auth.html" class="btn">Join The Waitlist</a>
+      </div>
+    </section>
+
+    <!-- Shared Footer -->
+    <footer class="footer container">
+      <div class="grid-2">
+        <div>
+          <h3 class="header-logo" style="margin-bottom: 1rem">Stillwater</h3>
+          <p style="color: var(--color-text-secondary); max-width: 300px">
+            Pioneering the future of holistic healing, stress management, and
+            premium digital wellness.
+          </p>
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 2rem;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+          "
+        >
+          <div>
+            <h4 class="text-caption" style="margin-bottom: 1.5rem">Explore</h4>
+            <ul
+              style="
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+                color: var(--color-text-secondary);
+              "
+            >
+              <li><a href="index.html">Vision</a></li>
+              <li><a href="about.html">About Us</a></li>
+              <li><a href="teams.html">Teams &amp; Advisors</a></li>
+              <li><a href="blog.html">Blog</a></li>
+              <li><a href="fundraising.html">Fundraising</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 class="text-caption" style="margin-bottom: 1.5rem">Connect</h4>
+            <ul
+              style="
+                list-style: none;
+                display: flex;
+                flex-direction: column;
+                gap: 0.8rem;
+                color: var(--color-text-secondary);
+              "
+            >
+              <li><a href="careers.html">Careers</a></li>
+              <li><a href="auth.html">Waitlist</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- Social Links -->
+      <div class="social-links">
+        <!-- Instagram -->
+        <a
+          href="https://www.instagram.com/stillwater_you"
+          target="_blank"
+          rel="noopener"
+          aria-label="Instagram"
+          class="social-icon"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="2"
+              y="2"
+              width="20"
+              height="20"
+              rx="5"
+              ry="5"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle
+              cx="12"
+              cy="12"
+              r="4.5"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" />
+          </svg>
+        </a>
+        <!-- LinkedIn -->
+        <a
+          href="https://www.linkedin.com/company/stillwater-you"
+          target="_blank"
+          rel="noopener"
+          aria-label="LinkedIn"
+          class="social-icon"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect
+              x="2"
+              y="2"
+              width="20"
+              height="20"
+              rx="3"
+              stroke="currentColor"
+              stroke-width="1.5"
+            />
+            <path
+              d="M7 10v7"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M11 17v-4c0-1.5 1-3 3-3s3 1.5 3 3v4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <path
+              d="M11 10v7"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+            <circle cx="7" cy="7.5" r="1" fill="currentColor" />
+          </svg>
+        </a>
+        <!-- Facebook -->
+        <a
+          href="https://www.facebook.com/stillwateryou"
+          target="_blank"
+          rel="noopener"
+          aria-label="Facebook"
+          class="social-icon"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </a>
+        <!-- X (Twitter) -->
+        <a
+          href="https://x.com/StillWater_You"
+          target="_blank"
+          rel="noopener"
+          aria-label="X / Twitter"
+          class="social-icon"
+        >
+          <svg
+            width="22"
+            height="22"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M4 4l16 16M4 20L20 4"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </a>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 Stillwater Estate. All rights reserved.</span>
+        <a href="#" style="text-decoration: underline">Privacy Policy</a>
+      </div>
+    </footer>
+
+    <script src="js/shared.js"></script>
+    <script>
+      // Force video autoplay on mobile browsers
+      (function () {
+        const video = document.getElementById("heroVideo");
+        if (!video) return;
+        // Attempt to play immediately
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {
+            // Autoplay blocked — try again on first user interaction
+            const tryPlay = () => {
+              video.play();
+              document.removeEventListener("touchstart", tryPlay);
+              document.removeEventListener("click", tryPlay);
+              document.removeEventListener("scroll", tryPlay);
+            };
+            document.addEventListener("touchstart", tryPlay, {
+              once: true,
+              passive: true,
+            });
+            document.addEventListener("click", tryPlay, { once: true });
+            document.addEventListener("scroll", tryPlay, {
+              once: true,
+              passive: true,
+            });
+          });
+        }
+      })();
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", async () => {
+        // 1. Fetch Waitlist
+        try {
+          const response = await fetch("/api/waitlist");
+          const data = await response.json();
+          const target = data.count || 842;
+
+          const counterElement = document.getElementById("waitlistCounter");
+          let current = 0;
+          const duration = 2000; // 2 seconds
+          const steps = 60;
+          const increment = target / steps;
+          const stepTime = Math.abs(Math.floor(duration / steps));
+
+          const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              counterElement.innerText = target.toLocaleString("en-US");
+              clearInterval(timer);
+            } else {
+              counterElement.innerText =
+                Math.floor(current).toLocaleString("en-US");
+            }
+          }, stepTime);
+        } catch (err) {
+          console.error("Could not fetch waitlist count:", err);
+          document.getElementById("waitlistCounter").innerText = "842";
+        }
+
+        // 2. Fetch Trust Stats
+        try {
+          const statsResponse = await fetch("/api/trust-stats");
+          const statsData = await statsResponse.json();
+
+          document.getElementById("trustCentres").innerText =
+            statsData.centres || "40K+";
+          document.getElementById("trustTourists").innerText =
+            statsData.tourists || "600K";
+          document.getElementById("trustProviders").innerText =
+            statsData.providers || "4";
+          document.getElementById("trustAuthenticity").innerText =
+            statsData.authenticity || "100%";
+        } catch (err) {
+          console.error("Could not fetch trust stats:", err);
+          document.getElementById("trustCentres").innerText = "40K+";
+          document.getElementById("trustTourists").innerText = "600K";
+          document.getElementById("trustProviders").innerText = "4";
+          document.getElementById("trustAuthenticity").innerText = "100%";
+        }
+      });
+    </script>
+  </body>
+</html>
