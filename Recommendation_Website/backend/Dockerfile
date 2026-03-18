@@ -18,4 +18,5 @@ COPY . ./
 EXPOSE 3001
 
 # Run migrations then start the server
-CMD ["sh", "-c", "npx prisma migrate deploy && node server.js"]
+# Append ?schema=recommendation to DATABASE_URL so Prisma creates tables in the correct schema
+CMD ["sh", "-c", "export DATABASE_URL=\"${DATABASE_URL}?schema=recommendation\" && npx prisma migrate deploy && node server.js"]
