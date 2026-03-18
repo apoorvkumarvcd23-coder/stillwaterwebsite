@@ -5,8 +5,6 @@ const router = express.Router();
 
 const { calculateRecommendation } = require('../services/recommendationEngine');
 
-const { extractHealthSignals } = require('../services/aiExtraction');
-
 // 1. Save Assessment
 router.post('/assessment', async (req, res) => {
     try {
@@ -19,13 +17,18 @@ router.post('/assessment', async (req, res) => {
             conditions: providedConditions, symptoms: providedSymptoms, goals: providedGoals
         } = req.body;
 
-        // Perform AI/Keyword extraction on free-text fields
-        const combinedText = `${eye_condition || ""} ${health_goals || ""}`;
-        const extracted = await extractHealthSignals(combinedText);
+        const normalizeToStringArray = (value) => {
+            if (Array.isArray(value)) {
+                return value
+                    .map((v) => String(v).trim())
+                    .filter(Boolean);
+            }
+            return [];
+        };
 
-        const conditions = Array.from(new Set([...(providedConditions || []), ...extracted.conditions]));
-        const symptoms = Array.from(new Set([...(providedSymptoms || []), ...extracted.symptoms]));
-        const goals = Array.from(new Set([...(providedGoals || []), ...extracted.goals]));
+        const conditions = Array.from(new Set(normalizeToStringArray(providedConditions)));
+        const symptoms = Array.from(new Set(normalizeToStringArray(providedSymptoms)));
+        const goals = Array.from(new Set(normalizeToStringArray(providedGoals)));
 
         const user = await prisma.user.create({
             data: {

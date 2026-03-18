@@ -38,26 +38,25 @@ export default function LeadsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(assessmentData),
       });
+      if (!assessmentRes.ok) {
+        throw new Error("Failed to save assessment");
+      }
       const { userId } = await assessmentRes.json();
 
       if (!userId) throw new Error("Failed to save assessment");
 
       // 3. Submit leads
-      await fetch(`${apiBase}/leads`, {
+      const leadsRes = await fetch(`${apiBase}/leads`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userId, ...formData }),
       });
+      if (!leadsRes.ok) {
+        throw new Error("Failed to save contact details");
+      }
 
-      // 4. Generate recommendation
-      await fetch(`${apiBase}/recommendation`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId }),
-      });
-
-      // 5. Redirect to personalised results page
-      router.push(`/results/${userId}`);
+      // 4. Redirect to confirmation page
+      router.push(`/results`);
     } catch (err) {
       console.error(err);
       setError("Something went wrong. Please try again.");
@@ -87,10 +86,11 @@ export default function LeadsPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label htmlFor="full-name" className="block text-sm text-gray-300 mb-2">
                   Full Name
                 </label>
                 <input
+                  id="full-name"
                   type="text"
                   required
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -101,10 +101,11 @@ export default function LeadsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label htmlFor="email-address" className="block text-sm text-gray-300 mb-2">
                   Email Address
                 </label>
                 <input
+                  id="email-address"
                   type="email"
                   required
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -115,10 +116,11 @@ export default function LeadsPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label htmlFor="phone-number" className="block text-sm text-gray-300 mb-2">
                   Phone Number
                 </label>
                 <input
+                  id="phone-number"
                   type="tel"
                   required
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"

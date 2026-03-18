@@ -54,22 +54,6 @@ services:
       # e.g. https://stillwater-main.onrender.com
       - key: CORS_ORIGIN
         sync: false
-      - key: OPENAI_BASE_URL
-        sync: false
-      - key: OPENAI_MODEL
-        sync: false
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: OPENROUTER_API_KEY
-        sync: false
-      - key: OPENROUTER_BASE_URL
-        sync: false
-      - key: OPENROUTER_MODEL
-        sync: false
-      - key: OPENROUTER_SITE_URL
-        sync: false
-      - key: OPENROUTER_APP_NAME
-        sync: false
 
   # ── 3. Recommendation frontend ───────────────────────────────────────────────
   - type: web

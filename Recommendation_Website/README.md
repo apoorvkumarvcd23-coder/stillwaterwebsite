@@ -1,18 +1,16 @@
-# Wellness Recommendation Web Application
+# Wellness Data Collection Web Application
 
-A full-stack personalized wellness recommendation platform that collects user health data, processes it via a dynamic scoring engine, and recommends specific wellness services along with clear explanations.
+A full-stack wellness intake platform that collects user health and contact data for team follow-up.
 
 ## Tech Stack
 - **Frontend**: Next.js 14, React, Tailwind CSS, Framer Motion
 - **Backend**: Node.js, Express, Prisma ORM
 - **Database**: SQLite (Local Dev) / PostgreSQL (Production)
-- **AI Integration**: OpenAI API for symptom extraction
 
 ## Features
 - Interactive, multi-step health assessment form with `localStorage` autosave.
-- Lead capture funnel before revealing results.
-- Dynamic recommendation engine fetching scoring rules directly from the database schema `ServiceRule`.
-- Explanation engine detailing *WHY* a particular service was recommended.
+- Lead capture funnel with confirmation messaging.
+- Stores assessment and contact information in PostgreSQL via Prisma.
 - Admin dashboard to track basic conversion metrics and top health issues.
 
 ## Setup Instructions
@@ -31,7 +29,6 @@ A full-stack personalized wellness recommendation platform that collects user he
    ```env
    DATABASE_URL="file:./dev.db"
    PORT=3001
-   OPENAI_API_KEY="your_openai_api_key"
    ```
 4. Run Prisma migrations and generate the client:
    ```bash
