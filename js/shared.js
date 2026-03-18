@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnAdmin = document.getElementById("btnAdmin");
     const btnRecommendation = document.getElementById("btnRecommendation");
 
-    const loginUrl = `/auth/google?returnTo=${encodeURIComponent(window.location.href)}`;
+    const loginUrl = `/auth.html?returnTo=${encodeURIComponent(window.location.href)}`;
     if (btnLogin) btnLogin.setAttribute("href", loginUrl);
 
     fetch("/api/auth/me", { credentials: "include" })
