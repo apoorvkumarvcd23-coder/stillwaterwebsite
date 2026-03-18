@@ -78,6 +78,7 @@ services:
         NEXT_PUBLIC_AUTH_BASE_URL: http://localhost:3005
     environment:
       PORT: 3000
+      HOSTNAME: 0.0.0.0
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3005/recommendation/api
       NEXT_PUBLIC_AUTH_BASE_URL: http://localhost:3005
     depends_on:
