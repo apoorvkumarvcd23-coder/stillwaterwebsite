@@ -86,7 +86,10 @@ export default function LeadsPage() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="full-name" className="block text-sm text-gray-300 mb-2">
+                <label
+                  htmlFor="full-name"
+                  className="block text-sm text-gray-300 mb-2"
+                >
                   Full Name
                 </label>
                 <input
@@ -101,7 +104,10 @@ export default function LeadsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="email-address" className="block text-sm text-gray-300 mb-2">
+                <label
+                  htmlFor="email-address"
+                  className="block text-sm text-gray-300 mb-2"
+                >
                   Email Address
                 </label>
                 <input
@@ -116,7 +122,10 @@ export default function LeadsPage() {
                 />
               </div>
               <div>
-                <label htmlFor="phone-number" className="block text-sm text-gray-300 mb-2">
+                <label
+                  htmlFor="phone-number"
+                  className="block text-sm text-gray-300 mb-2"
+                >
                   Phone Number
                 </label>
                 <input

@@ -3,11 +3,13 @@
 A full-stack wellness intake platform that collects user health and contact data for team follow-up.
 
 ## Tech Stack
+
 - **Frontend**: Next.js 14, React, Tailwind CSS, Framer Motion
 - **Backend**: Node.js, Express, Prisma ORM
 - **Database**: SQLite (Local Dev) / PostgreSQL (Production)
 
 ## Features
+
 - Interactive, multi-step health assessment form with `localStorage` autosave.
 - Lead capture funnel with confirmation messaging.
 - Stores assessment and contact information in PostgreSQL via Prisma.
@@ -16,6 +18,7 @@ A full-stack wellness intake platform that collects user health and contact data
 ## Setup Instructions
 
 ### 1. Database & Backend
+
 1. Navigate to the `backend` directory:
    ```bash
    cd backend
@@ -45,6 +48,7 @@ A full-stack wellness intake platform that collects user health and contact data
    ```
 
 ### 2. Frontend
+
 1. Navigate to the `frontend` directory:
    ```bash
    cd frontend
@@ -60,6 +64,7 @@ A full-stack wellness intake platform that collects user health and contact data
 4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Deployment Notes
+
 - **Frontend**: Deploy to Vercel easily by linking the `frontend` directory via GitHub.
 - **Backend**: Deploy to Render or Railway. Set the `DATABASE_URL` appropriately for your production Postgres DB (e.g., Supabase).
 - **Database**: Ensure you run `npx prisma db push` or `npx prisma migrate deploy` in your CI/CD pipeline.

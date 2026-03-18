@@ -1,157 +1,181 @@
-const { PrismaClient } = require('@prisma/client');
+const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { calculateRecommendation } = require('../services/recommendationEngine');
+const { calculateRecommendation } = require("../services/recommendationEngine");
 
 // 1. Save Assessment
-router.post('/assessment', async (req, res) => {
-    try {
-        const {
-            age, gender, height, weight, occupation_type,
-            diet_breakfast, diet_lunch, diet_dinner, diet_snacks, diet_snacks_time,
-            bed_time, wake_up_time, water_glasses, exercise_info,
-            eye_condition, wears_spectacles,
-            health_goals,
-            conditions: providedConditions, symptoms: providedSymptoms, goals: providedGoals
-        } = req.body;
+router.post("/assessment", async (req, res) => {
+  try {
+    const {
+      age,
+      gender,
+      height,
+      weight,
+      occupation_type,
+      diet_breakfast,
+      diet_lunch,
+      diet_dinner,
+      diet_snacks,
+      diet_snacks_time,
+      bed_time,
+      wake_up_time,
+      water_glasses,
+      exercise_info,
+      eye_condition,
+      wears_spectacles,
+      health_goals,
+      conditions: providedConditions,
+      symptoms: providedSymptoms,
+      goals: providedGoals,
+    } = req.body;
 
-        const normalizeToStringArray = (value) => {
-            if (Array.isArray(value)) {
-                return value
-                    .map((v) => String(v).trim())
-                    .filter(Boolean);
-            }
-            return [];
-        };
+    const normalizeToStringArray = (value) => {
+      if (Array.isArray(value)) {
+        return value.map((v) => String(v).trim()).filter(Boolean);
+      }
+      return [];
+    };
 
-        const conditions = Array.from(new Set(normalizeToStringArray(providedConditions)));
-        const symptoms = Array.from(new Set(normalizeToStringArray(providedSymptoms)));
-        const goals = Array.from(new Set(normalizeToStringArray(providedGoals)));
+    const conditions = Array.from(
+      new Set(normalizeToStringArray(providedConditions)),
+    );
+    const symptoms = Array.from(
+      new Set(normalizeToStringArray(providedSymptoms)),
+    );
+    const goals = Array.from(new Set(normalizeToStringArray(providedGoals)));
 
-        const user = await prisma.user.create({
-            data: {
-                age: age ? parseInt(age) : 0,
-                gender: gender || "",
-                height: height ? parseFloat(height) : 0,
-                weight: weight ? parseFloat(weight) : 0,
-                occupation_type: occupation_type || "",
-                // Diet
-                diet_breakfast: diet_breakfast || "",
-                diet_lunch: diet_lunch || "",
-                diet_dinner: diet_dinner || "",
-                diet_snacks: diet_snacks || "",
-                diet_snacks_time: diet_snacks_time || "",
-                // Lifestyle
-                bed_time: bed_time || "",
-                wake_up_time: wake_up_time || "",
-                water_glasses: water_glasses ? parseInt(water_glasses) : 0,
-                exercise_info: exercise_info || "",
-                // Eye Health
-                eye_condition: eye_condition || "",
-                wears_spectacles: !!wears_spectacles,
-                // Goals
-                health_goals: health_goals || "",
+    const user = await prisma.user.create({
+      data: {
+        age: age ? parseInt(age) : 0,
+        gender: gender || "",
+        height: height ? parseFloat(height) : 0,
+        weight: weight ? parseFloat(weight) : 0,
+        occupation_type: occupation_type || "",
+        // Diet
+        diet_breakfast: diet_breakfast || "",
+        diet_lunch: diet_lunch || "",
+        diet_dinner: diet_dinner || "",
+        diet_snacks: diet_snacks || "",
+        diet_snacks_time: diet_snacks_time || "",
+        // Lifestyle
+        bed_time: bed_time || "",
+        wake_up_time: wake_up_time || "",
+        water_glasses: water_glasses ? parseInt(water_glasses) : 0,
+        exercise_info: exercise_info || "",
+        // Eye Health
+        eye_condition: eye_condition || "",
+        wears_spectacles: !!wears_spectacles,
+        // Goals
+        health_goals: health_goals || "",
 
-                conditions: {
-                    create: conditions.map(c => ({ condition_name: c }))
-                },
-                symptoms: {
-                    create: symptoms.map(s => ({ symptom_name: s }))
-                },
-                goals: {
-                    create: goals.map(g => ({ goal_name: g }))
-                }
-            },
-            include: {
-                conditions: true,
-                symptoms: true,
-                goals: true
-            }
-        });
+        conditions: {
+          create: conditions.map((c) => ({ condition_name: c })),
+        },
+        symptoms: {
+          create: symptoms.map((s) => ({ symptom_name: s })),
+        },
+        goals: {
+          create: goals.map((g) => ({ goal_name: g })),
+        },
+      },
+      include: {
+        conditions: true,
+        symptoms: true,
+        goals: true,
+      },
+    });
 
-        res.json({ success: true, userId: user.id });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to save assessment', details: error.message });
-    }
+    res.json({ success: true, userId: user.id });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ error: "Failed to save assessment", details: error.message });
+  }
 });
 
 // 2. Save Lead Collection Details
-router.post('/leads', async (req, res) => {
-    try {
-        const { userId, name, email, phone } = req.body;
-        await prisma.user.update({
-            where: { id: parseInt(userId) },
-            data: { name, email, phone }
-        });
-        res.json({ success: true });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to save lead information' });
-    }
+router.post("/leads", async (req, res) => {
+  try {
+    const { userId, name, email, phone } = req.body;
+    await prisma.user.update({
+      where: { id: parseInt(userId) },
+      data: { name, email, phone },
+    });
+    res.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to save lead information" });
+  }
 });
 
 // 3. Calculate and Save Recommendation
-router.post('/recommendation', async (req, res) => {
-    try {
-        const { userId } = req.body;
-        const user = await prisma.user.findUnique({
-            where: { id: parseInt(userId) },
-            include: { conditions: true, symptoms: true, goals: true }
-        });
+router.post("/recommendation", async (req, res) => {
+  try {
+    const { userId } = req.body;
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(userId) },
+      include: { conditions: true, symptoms: true, goals: true },
+    });
 
-        if (!user) return res.status(404).json({ error: 'User not found' });
+    if (!user) return res.status(404).json({ error: "User not found" });
 
-        const recommendation = await calculateRecommendation(user);
-        res.json(recommendation);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to calculate recommendation' });
-    }
+    const recommendation = await calculateRecommendation(user);
+    res.json(recommendation);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to calculate recommendation" });
+  }
 });
 
 // 4. Get Recommendation Results
-router.get('/recommendation/:userId', async (req, res) => {
-    try {
-        const recommendation = await prisma.recommendation.findFirst({
-            where: { userId: parseInt(req.params.userId) },
-            orderBy: { createdAt: 'desc' }
-        });
+router.get("/recommendation/:userId", async (req, res) => {
+  try {
+    const recommendation = await prisma.recommendation.findFirst({
+      where: { userId: parseInt(req.params.userId) },
+      orderBy: { createdAt: "desc" },
+    });
 
-        if (!recommendation) return res.status(404).json({ error: 'Not found' });
-        res.json(recommendation);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to fetch recommendation' });
-    }
+    if (!recommendation) return res.status(404).json({ error: "Not found" });
+    res.json(recommendation);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch recommendation" });
+  }
 });
 
 // 5. Admin Dashboard Analytics
-router.get('/admin/dashboard', async (req, res) => {
-    try {
-        const totalAssessments = await prisma.user.count();
-        const withEmails = await prisma.user.count({ where: { email: { not: null } } });
+router.get("/admin/dashboard", async (req, res) => {
+  try {
+    const totalAssessments = await prisma.user.count();
+    const withEmails = await prisma.user.count({
+      where: { email: { not: null } },
+    });
 
-        // Simplistic aggregations manually since SQLite lacks certain aggregations
-        // For Production / Postgres, you'd use groupBy. Let's use simple logic here.
-        const conditions = await prisma.userCondition.findMany();
-        const counts = {};
-        conditions.forEach(c => {
-            counts[c.condition_name] = (counts[c.condition_name] || 0) + 1;
-        });
-        const topConditions = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    // Simplistic aggregations manually since SQLite lacks certain aggregations
+    // For Production / Postgres, you'd use groupBy. Let's use simple logic here.
+    const conditions = await prisma.userCondition.findMany();
+    const counts = {};
+    conditions.forEach((c) => {
+      counts[c.condition_name] = (counts[c.condition_name] || 0) + 1;
+    });
+    const topConditions = Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
 
-        res.json({
-            totalAssessments,
-            conversionRate: totalAssessments ? Math.round((withEmails / totalAssessments) * 100) : 0,
-            topConditions
-        });
-    } catch (e) {
-        console.error(e);
-        res.status(500).json({ error: 'Failed dashboard stats' });
-    }
+    res.json({
+      totalAssessments,
+      conversionRate: totalAssessments
+        ? Math.round((withEmails / totalAssessments) * 100)
+        : 0,
+      topConditions,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Failed dashboard stats" });
+  }
 });
 
 module.exports = router;

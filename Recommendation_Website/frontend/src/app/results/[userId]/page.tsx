@@ -19,9 +19,12 @@ export default function ResultsPage() {
                 <CheckCircle2 className="w-12 h-12 text-accent" />
               </div>
             </div>
-            <h1 className="text-3xl font-heading mb-4 text-white">Details Submitted</h1>
+            <h1 className="text-3xl font-heading mb-4 text-white">
+              Details Submitted
+            </h1>
             <p className="text-gray-300 text-lg leading-relaxed mb-8">
-              Thank you for completing the survey. Our experts will review your profile and contact you with a diagnosis and next steps shortly.
+              Thank you for completing the survey. Our experts will review your
+              profile and contact you with a diagnosis and next steps shortly.
             </p>
             <div className="pt-4 border-t border-white/5">
               <p className="text-sm text-gray-500">
