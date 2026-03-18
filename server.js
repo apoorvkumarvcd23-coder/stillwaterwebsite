@@ -3,6 +3,8 @@ const express = require("express");
 const session = require("express-session");
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcrypt");
 const path = require("path");
 const cors = require("cors");
 const { Pool } = require("pg");
@@ -55,6 +57,17 @@ async function initDb() {
       name TEXT,
       email TEXT,
       role TEXT DEFAULT 'customer'
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users_phone (
+      id BIGSERIAL PRIMARY KEY,
+      phone TEXT UNIQUE NOT NULL,
+      name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT DEFAULT 'customer',
+      created_at TIMESTAMPTZ DEFAULT NOW()
     )
   `);
 
@@ -276,6 +289,68 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
     "WARNING: GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET is missing. OAuth will not work.",
   );
 }
+
+// Passport Local Strategy for Phone/Password Authentication
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "phone",
+      passwordField: "password",
+    },
+    async (phone, password, done) => {
+      try {
+        const result = await pool.query(
+          "SELECT * FROM users_phone WHERE phone = $1",
+          [phone],
+        );
+        const user = result.rows[0];
+
+        if (!user) {
+          return done(null, false, { message: "Phone number not found" });
+        }
+
+        const match = await bcrypt.compare(password, user.password_hash);
+        if (!match) {
+          return done(null, false, { message: "Incorrect password" });
+        }
+
+        return done(null, user);
+      } catch (err) {
+        return done(err);
+      }
+    },
+  ),
+);
+
+// Serialize/deserialize for phone-based users
+passport.serializeUser((user, done) => {
+  // Store type to differentiate between OAuth and phone users
+  const userWithType = {
+    id: user.id,
+    phone: user.phone,
+    type: "phone",
+  };
+  done(null, userWithType);
+});
+
+passport.deserializeUser(async (userWithType, done) => {
+  try {
+    if (userWithType.type === "phone") {
+      const result = await pool.query(
+        "SELECT * FROM users_phone WHERE id = $1",
+        [userWithType.id],
+      );
+      done(null, result.rows[0] || null);
+    } else {
+      const result = await pool.query("SELECT * FROM users WHERE id = $1", [
+        userWithType.id,
+      ]);
+      done(null, result.rows[0] || null);
+    }
+  } catch (err) {
+    done(err, null);
+  }
+});
 
 // === RBAC MIDDLEWARE ===
 
@@ -559,6 +634,107 @@ app.get(
     });
   },
 );
+
+// Phone/Password Registration Route
+app.post("/auth/register", async (req, res) => {
+  try {
+    const { phone, name, password } = req.body;
+
+    if (!phone || !name || !password) {
+      return res.status(400).json({
+        error: "Phone, name, and password are required",
+      });
+    }
+
+    // Check if phone already exists
+    const existing = await pool.query(
+      "SELECT * FROM users_phone WHERE phone = $1",
+      [phone],
+    );
+    if (existing.rows.length > 0) {
+      return res.status(409).json({ error: "Phone number already registered" });
+    }
+
+    // Hash password
+    const password_hash = await bcrypt.hash(password, 10);
+
+    // Create user
+    const result = await pool.query(
+      "INSERT INTO users_phone (phone, name, password_hash, role) VALUES ($1, $2, $3, $4) RETURNING id, phone, name, role",
+      [phone, name, password_hash, "customer"],
+    );
+
+    const user = result.rows[0];
+
+    // Log the user in via Passport
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Login failed after registration" });
+      }
+
+      req.session.save((err) => {
+        if (err) {
+          return res
+            .status(500)
+            .json({ error: "Session save failed" });
+        }
+
+        res.json({
+          success: true,
+          message: "Account created and logged in",
+          user: {
+            id: user.id,
+            phone: user.phone,
+            name: user.name,
+            role: user.role,
+          },
+        });
+      });
+    });
+  } catch (err) {
+    console.error("Registration error:", err);
+    res.status(500).json({ error: "Registration failed" });
+  }
+});
+
+// Phone/Password Login Route
+app.post("/auth/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return res.status(500).json({ error: "Authentication error" });
+    }
+
+    if (!user) {
+      return res
+        .status(401)
+        .json({ error: info.message || "Invalid credentials" });
+    }
+
+    req.logIn(user, (err) => {
+      if (err) {
+        return res.status(500).json({ error: "Login failed" });
+      }
+
+      req.session.save((err) => {
+        if (err) {
+          return res.status(500).json({ error: "Session save failed" });
+        }
+
+        res.json({
+          success: true,
+          message: "Logged in successfully",
+          redirectUrl: "/portal.html",
+          user: {
+            id: user.id,
+            phone: user.phone,
+            name: user.name,
+            role: user.role,
+          },
+        });
+      });
+    });
+  })(req, res, next);
+});
 
 // Logout Route
 app.get("/logout", (req, res, next) => {
