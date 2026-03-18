@@ -48,10 +48,10 @@ router.post("/assessment", async (req, res) => {
 
     const user = await prisma.user.create({
       data: {
-        age: age ? parseInt(age) : 0,
+        age: parseInt(age) || 0,
         gender: gender || "",
-        height: height ? parseFloat(height) : 0,
-        weight: weight ? parseFloat(weight) : 0,
+        height: parseFloat(height) || 0,
+        weight: parseFloat(weight) || 0,
         occupation_type: occupation_type || "",
         // Diet
         diet_breakfast: diet_breakfast || "",
@@ -62,7 +62,7 @@ router.post("/assessment", async (req, res) => {
         // Lifestyle
         bed_time: bed_time || "",
         wake_up_time: wake_up_time || "",
-        water_glasses: water_glasses ? parseInt(water_glasses) : 0,
+        water_glasses: parseInt(water_glasses) || 0,
         exercise_info: exercise_info || "",
         // Eye Health
         eye_condition: eye_condition || "",
@@ -101,7 +101,7 @@ router.post("/leads", async (req, res) => {
   try {
     const { userId, name, email, phone } = req.body;
     await prisma.user.update({
-      where: { id: parseInt(userId) },
+      where: { id: parseInt(userId) || 0 },
       data: { name, email, phone },
     });
     res.json({ success: true });
