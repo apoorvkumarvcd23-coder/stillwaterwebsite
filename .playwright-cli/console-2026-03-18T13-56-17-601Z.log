@@ -1,0 +1,3 @@
+[   52964ms] [ERROR] Failed to load resource: the server responded with a status of 500 (Internal Server Error) @ http://localhost:3001/api/assessment:0
+[   52965ms] [ERROR] Error: Failed to save assessment
+    at handleSubmit (webpack-internal:///(app-pages-browser)/./src/app/leads/page.tsx:50:23) @ webpack-internal:///(app-pages-browser)/./node_modules/next/dist/client/app-index.js:32

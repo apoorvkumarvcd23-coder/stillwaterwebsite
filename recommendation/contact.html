@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Contact Details | Stillwater</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/assessment.css" />
+  </head>
+  <body>
+    <main class="assessment-page">
+      <section class="assessment-header">
+        <span class="assessment-kicker">Step 7 of 7</span>
+        <h1 class="assessment-title">Contact details</h1>
+        <p class="assessment-subtitle">
+          Share your details so our team can reach you with a diagnosis and next steps.
+        </p>
+      </section>
+
+      <section class="form-card">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 100%"></div>
+        </div>
+
+        <form data-assessment data-submit="true" data-next="/recommendation/thank-you.html">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="name">Full name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name" required />
+            </div>
+            <div class="form-field">
+              <label for="email">Email address</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-field">
+              <label for="phone">Phone number</label>
+              <input id="phone" name="phone" type="tel" placeholder="9876543210" required />
+            </div>
+          </div>
+
+          <p class="inline-note">
+            By submitting, you agree that our experts may contact you with your personalized diagnosis.
+          </p>
+
+          <div id="formError" class="form-error"></div>
+
+          <div class="form-actions">
+            <a class="btn-link" href="/recommendation/goals.html">Back</a>
+            <button class="btn-primary" type="submit">Submit details</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="/js/assessment.js"></script>
+  </body>
+</html>

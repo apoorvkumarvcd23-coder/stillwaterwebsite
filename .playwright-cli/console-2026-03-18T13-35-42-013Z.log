@@ -1,0 +1,5 @@
+Total messages: 2 (Errors: 2, Warnings: 0)
+
+[ERROR] Failed to load resource: the server responded with a status of 500 () @ https://stillwater-main.onrender.com/recommendation/api/assessment:0
+[ERROR] Error: Failed to save assessment
+    at h (https://stillwater-main.onrender.com/recommendation/_next/static/chunks/app/leads/page-ed6fe5cbf0efee9e.js:1:928) @ https://stillwater-main.onrender.com/recommendation/_next/static/chunks/117-31c6a345371257cf.js:0

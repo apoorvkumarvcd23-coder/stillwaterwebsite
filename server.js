@@ -9,10 +9,7 @@ const path = require("path");
 const cors = require("cors");
 const { Pool } = require("pg");
 const PgSession = require("connect-pg-simple")(session);
-const {
-  createProxyMiddleware,
-  fixRequestBody,
-} = require("http-proxy-middleware");
+const { PrismaClient } = require("@prisma/client");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -40,6 +37,8 @@ const pool = new Pool({
   connectionString: DATABASE_URL,
   ssl: isProd ? { rejectUnauthorized: false } : false,
 });
+
+const prisma = new PrismaClient();
 
 const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3002")
   .split(",")
@@ -118,71 +117,18 @@ app.use(
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-const recommendationApiTarget = (
-  process.env.RECOMMENDATION_API_URL || "http://recommendation-backend:3001"
-)
-  .replace(/\/+$/, "")
-  .replace(/\/(recommendation\/api|api)$/, "");
-const recommendationUiTarget = (
-  process.env.RECOMMENDATION_UI_URL || "http://recommendation-frontend:3000"
-)
-  .replace(/\/+$/, "")
-  .replace(/\/recommendation$/, "");
-
-console.log("Recommendation proxy targets:", {
-  api: recommendationApiTarget,
-  ui: recommendationUiTarget,
-});
-
-app.use(
-  "/recommendation/api",
-  createProxyMiddleware({
-    target: recommendationApiTarget,
-    changeOrigin: true,
-    on: {
-      proxyReq: fixRequestBody,
-    },
-    pathRewrite: (path) => {
-      // Express strips the mount path (/recommendation/api) before proxying.
-      // Re-add /api so backend routes mounted on /api resolve correctly.
-      if (path === "/") return "/api";
-      if (path === "/health") return "/health";
-      if (path.startsWith("/api")) return path;
-      return `/api${path}`;
-    },
-  }),
-);
-
-app.use(
-  "/_next",
-  createProxyMiddleware({
-    target: recommendationUiTarget,
-    changeOrigin: true,
-  }),
-);
-
-app.use(
-  "/recommendation",
-  createProxyMiddleware({
-    target: recommendationUiTarget,
-    changeOrigin: true,
-    pathRewrite: (path) => {
-      // Express strips the mount path (/recommendation) before proxying.
-      // Re-add it so Next.js basePath routes resolve correctly on the UI service.
-      if (path === "/") return "/recommendation";
-      if (path.startsWith("/recommendation")) return path;
-      return `/recommendation${path}`;
-    },
-  }),
-);
-
-app.use(
-  "/favicon.ico",
-  createProxyMiddleware({
-    target: recommendationUiTarget,
-    changeOrigin: true,
-  }),
-);
+const normalizeList = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (typeof value === "string" && value.trim()) {
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
 
 // Session Configuration
 app.use(
@@ -579,10 +525,108 @@ app.get("/api/auth/me", (req, res) => {
   });
 });
 
+app.post("/api/intake", async (req, res) => {
+  try {
+    const {
+      age,
+      gender,
+      height,
+      weight,
+      occupation_type,
+      diet_breakfast,
+      diet_lunch,
+      diet_dinner,
+      diet_snacks,
+      diet_snacks_time,
+      bed_time,
+      wake_up_time,
+      water_glasses,
+      exercise_info,
+      eye_condition,
+      wears_spectacles,
+      symptom_text,
+      health_goals,
+      conditions,
+      symptoms,
+      goals,
+      name,
+      email,
+      phone,
+    } = req.body;
+
+    if (!name || !email || !phone) {
+      return res.status(400).json({
+        error: "Name, email, and phone are required.",
+      });
+    }
+
+    const parsedAge = age === "" || age === undefined ? null : Number(age);
+    const parsedHeight =
+      height === "" || height === undefined ? null : Number(height);
+    const parsedWeight =
+      weight === "" || weight === undefined ? null : Number(weight);
+    const parsedWater =
+      water_glasses === "" || water_glasses === undefined
+        ? null
+        : Number(water_glasses);
+
+    const intake = await prisma.intake.create({
+      data: {
+        age: Number.isFinite(parsedAge) ? parsedAge : null,
+        gender: gender || null,
+        height: Number.isFinite(parsedHeight) ? parsedHeight : null,
+        weight: Number.isFinite(parsedWeight) ? parsedWeight : null,
+        occupationType: occupation_type || null,
+        dietBreakfast: diet_breakfast || null,
+        dietLunch: diet_lunch || null,
+        dietDinner: diet_dinner || null,
+        dietSnacks: diet_snacks || null,
+        dietSnacksTime: diet_snacks_time || null,
+        bedTime: bed_time || null,
+        wakeUpTime: wake_up_time || null,
+        waterGlasses: Number.isFinite(parsedWater) ? parsedWater : null,
+        exerciseInfo: exercise_info || null,
+        eyeCondition: eye_condition || null,
+        wearsSpectacles:
+          wears_spectacles === true || wears_spectacles === "true" ? true : null,
+        symptomText: symptom_text || null,
+        healthGoals: health_goals || null,
+        name: name || null,
+        email: email || null,
+        phone: phone || null,
+        conditions: {
+          create: normalizeList(conditions).map((condition) => ({
+            condition: condition,
+          })),
+        },
+        symptoms: {
+          create: normalizeList(symptoms).map((symptom) => ({
+            symptom: symptom,
+          })),
+        },
+        goals: {
+          create: normalizeList(goals).map((goal) => ({
+            goal: goal,
+          })),
+        },
+      },
+    });
+
+    res.json({ success: true, intakeId: intake.id });
+  } catch (error) {
+    console.error("Failed to save intake:", error);
+    res.status(500).json({ error: "Failed to save intake" });
+  }
+});
+
 // === STATIC & PUBLIC ROUTES ===
 
 // Serve Static Assets (HTML/CSS/JS/Images)
 app.use(express.static(path.join(__dirname)));
+
+app.get("/recommendation", (req, res) => {
+  res.sendFile(path.join(__dirname, "recommendation", "index.html"));
+});
 
 // Fallback for root
 app.get("/", (req, res) => {
@@ -669,14 +713,14 @@ app.post("/auth/register", async (req, res) => {
     // Log the user in via Passport
     req.logIn(user, (err) => {
       if (err) {
-        return res.status(500).json({ error: "Login failed after registration" });
+        return res
+          .status(500)
+          .json({ error: "Login failed after registration" });
       }
 
       req.session.save((err) => {
         if (err) {
-          return res
-            .status(500)
-            .json({ error: "Session save failed" });
+          return res.status(500).json({ error: "Session save failed" });
         }
 
         res.json({

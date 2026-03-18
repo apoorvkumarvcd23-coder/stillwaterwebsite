@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Health Conditions | Stillwater</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/assessment.css" />
+  </head>
+  <body>
+    <main class="assessment-page">
+      <section class="assessment-header">
+        <span class="assessment-kicker">Step 4 of 7</span>
+        <h1 class="assessment-title">Eye health & conditions</h1>
+        <p class="assessment-subtitle">
+          Share any known conditions and tell us about your current eye health.
+        </p>
+      </section>
+
+      <section class="form-card">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 56%"></div>
+        </div>
+
+        <form data-assessment data-next="/recommendation/symptoms.html">
+          <div class="form-field">
+            <label>Known eye conditions (select all that apply)</label>
+            <div class="option-grid three-col">
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="myopia" />
+                Myopia
+              </label>
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="hyperopia" />
+                Hyperopia
+              </label>
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="astigmatism" />
+                Astigmatism
+              </label>
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="dry eyes" />
+                Dry eyes
+              </label>
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="glaucoma" />
+                Glaucoma
+              </label>
+              <label class="option-card">
+                <input type="checkbox" name="conditions[]" value="none" />
+                None
+              </label>
+            </div>
+          </div>
+
+          <div class="form-field">
+            <label for="eye_condition">Describe any eye conditions</label>
+            <textarea
+              id="eye_condition"
+              name="eye_condition"
+              rows="3"
+              placeholder="Please describe any eye issues or conditions"
+            ></textarea>
+          </div>
+
+          <div class="form-field">
+            <label class="option-card">
+              <input type="checkbox" name="wears_spectacles" value="true" />
+              I wear spectacles
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <a class="btn-link" href="/recommendation/lifestyle.html">Back</a>
+            <button class="btn-primary" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="/js/assessment.js"></script>
+  </body>
+</html>

@@ -1,0 +1,8 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e21]
+  - main [ref=e23]:
+    - generic [ref=e26]:
+      - img [ref=e29]
+      - heading "Details Submitted" [level=1] [ref=e32]
+      - paragraph [ref=e33]: Thank you for completing the survey. Our experts will review your profile and contact you with a diagnosis and next steps shortly.
+      - paragraph [ref=e35]: You can close this page now. We'll be in touch soon.

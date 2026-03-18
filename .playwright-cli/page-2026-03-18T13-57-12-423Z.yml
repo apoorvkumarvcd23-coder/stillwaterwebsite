@@ -1,0 +1,23 @@
+- generic [active] [ref=e1]:
+  - main [ref=e2]:
+    - generic [ref=e5]:
+      - heading "Your results are ready!" [level=1] [ref=e6]
+      - paragraph [ref=e7]: Enter your details below to reveal your personalized wellness plan.
+      - paragraph [ref=e22]: Something went wrong. Please try again.
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - generic [ref=e10]: Full Name
+          - textbox "Full Name" [ref=e11]: Test User
+        - generic [ref=e12]:
+          - generic [ref=e13]: Email Address
+          - textbox "Email Address" [ref=e14]:
+            - /placeholder: you@example.com
+            - text: test@example.com
+        - generic [ref=e15]:
+          - generic [ref=e16]: Phone Number
+          - textbox "Phone Number" [ref=e17]:
+            - /placeholder: "9876543210"
+            - text: "9876543210"
+        - button "Submit Details" [ref=e19] [cursor=pointer]
+      - paragraph [ref=e20]: By continuing, you agree to receive wellness insights. We respect your privacy.
+  - alert [ref=e21]

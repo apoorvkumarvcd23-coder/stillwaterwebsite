@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diet Habits | Stillwater</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/css/index.css" />
+    <link rel="stylesheet" href="/css/assessment.css" />
+  </head>
+  <body>
+    <main class="assessment-page">
+      <section class="assessment-header">
+        <span class="assessment-kicker">Step 2 of 7</span>
+        <h1 class="assessment-title">Daily eating habits</h1>
+        <p class="assessment-subtitle">
+          Describe what and when you eat during a typical day.
+        </p>
+      </section>
+
+      <section class="form-card">
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: 28%"></div>
+        </div>
+
+        <form data-assessment data-next="/recommendation/lifestyle.html">
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="diet_breakfast">Breakfast</label>
+              <textarea
+                id="diet_breakfast"
+                name="diet_breakfast"
+                rows="2"
+                placeholder="What do you usually eat for breakfast?"
+              ></textarea>
+            </div>
+
+            <div class="form-grid two-col">
+              <div class="form-field">
+                <label for="diet_lunch">Lunch</label>
+                <textarea
+                  id="diet_lunch"
+                  name="diet_lunch"
+                  rows="2"
+                  placeholder="Typical lunch"
+                ></textarea>
+              </div>
+              <div class="form-field">
+                <label for="diet_dinner">Dinner</label>
+                <textarea
+                  id="diet_dinner"
+                  name="diet_dinner"
+                  rows="2"
+                  placeholder="Typical dinner"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-grid two-col">
+              <div class="form-field">
+                <label for="diet_snacks">Snacks</label>
+                <textarea
+                  id="diet_snacks"
+                  name="diet_snacks"
+                  rows="2"
+                  placeholder="Snacks you usually have"
+                ></textarea>
+              </div>
+              <div class="form-field">
+                <label for="diet_snacks_time">Snack time</label>
+                <input
+                  id="diet_snacks_time"
+                  name="diet_snacks_time"
+                  type="text"
+                  placeholder="e.g., 4 PM, 11 AM"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <a class="btn-link" href="/recommendation/index.html">Back</a>
+            <button class="btn-primary" type="submit">Continue</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <script src="/js/assessment.js"></script>
+  </body>
+</html>
