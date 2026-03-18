@@ -8,16 +8,29 @@ import Card from '@/components/Card';
 import ProgressBar from '@/components/ProgressBar';
 import VoiceInput from '@/components/VoiceInput';
 import AutoResizeTextarea from '@/components/AutoResizeTextarea';
+import TTSButton from '@/components/TTSButton';
 
 const SECTIONS = [
     'Basic Info', 'Diet', 'Lifestyle', 'Health Conditions', 'Symptoms', 'Goals'
 ];
+
+const TTS_LANGUAGES = {
+  'en-IN': 'English',
+  'hi-IN': 'हिंदी',
+  'gu-IN': 'ગુજરાતી',
+  'kn-IN': 'ಕನ್ನಡ',
+  'ml-IN': 'മലയാളം',
+  'mr-IN': 'मराठी',
+  'ta-IN': 'தமிழ்',
+  'te-IN': 'తెలుగు',
+};
 
 export default function AssessmentPage() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(0);
     const [formData, setFormData] = useState<any>({});
     const [isClient, setIsClient] = useState(false);
+    const [ttsLanguage, setTtsLanguage] = useState<string>('en-IN');
 
     useEffect(() => {
         setIsClient(true);
@@ -78,11 +91,29 @@ export default function AssessmentPage() {
 
                 {/* Progress Header */}
                 <div className="mb-12">
-                    <div className="flex justify-between text-sm text-accent mb-2 font-medium">
-                        <span>{SECTIONS[currentStep]}</span>
-                        <span>Step {currentStep + 1} of {SECTIONS.length}</span>
+                    <div className="flex justify-between items-center mb-4">
+                        <div>
+                            <div className="flex justify-between text-sm text-accent mb-2 font-medium">
+                                <span>{SECTIONS[currentStep]}</span>
+                                <span>Step {currentStep + 1} of {SECTIONS.length}</span>
+                            </div>
+                            <ProgressBar progress={((currentStep + 1) / SECTIONS.length) * 100} />
+                        </div>
                     </div>
-                    <ProgressBar progress={((currentStep + 1) / SECTIONS.length) * 100} />
+                    
+                    {/* Language Selector for TTS */}
+                    <div className="mt-4 flex items-center gap-3">
+                        <label className="text-sm text-gray-400">🔊 Audio Language:</label>
+                        <select
+                            value={ttsLanguage}
+                            onChange={(e) => setTtsLanguage(e.target.value)}
+                            className="bg-background border border-cards p-2 rounded-lg text-sm focus:outline-none focus:border-accent text-gray-300"
+                        >
+                            {Object.entries(TTS_LANGUAGES).map(([code, name]) => (
+                                <option key={code} value={code}>{name}</option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
 
                 {/* Steps Content */}
@@ -103,7 +134,10 @@ export default function AssessmentPage() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Age</label>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="block text-sm text-gray-400">Age</label>
+                                                <TTSButton text="Enter your age" label="Age" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="number" min="1"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -112,7 +146,10 @@ export default function AssessmentPage() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Gender</label>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="block text-sm text-gray-400">Gender</label>
+                                                <TTSButton text="Select your gender" label="Gender" language={ttsLanguage} />
+                                            </div>
                                             <select
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.gender || ''}
@@ -128,7 +165,10 @@ export default function AssessmentPage() {
 
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Height (cm)</label>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="block text-sm text-gray-400">Height (cm)</label>
+                                                <TTSButton text="Enter your height in centimeters" label="Height" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="number" min="1"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -137,7 +177,10 @@ export default function AssessmentPage() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Weight (kg)</label>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="block text-sm text-gray-400">Weight (kg)</label>
+                                                <TTSButton text="Enter your weight in kilograms" label="Weight" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="number" min="1"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -148,7 +191,10 @@ export default function AssessmentPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-gray-400 mb-2">Occupation Type</label>
+                                        <div className="flex items-center justify-between mb-2">
+                                            <label className="block text-sm text-gray-400">Occupation Type</label>
+                                            <TTSButton text="Select your occupation type" label="Occupation" language={ttsLanguage} />
+                                        </div>
                                         <div className="flex gap-4 flex-wrap">
                                             {['Desk job', 'Physical work', 'Student'].map(occ => (
                                                 <label key={occ} className="flex items-center gap-2 cursor-pointer bg-background p-3 rounded-lg border border-cards hover:border-accent transition-colors flex-1 min-w-[120px]">
@@ -178,7 +224,10 @@ export default function AssessmentPage() {
                                         <div>
                                             <div className="flex justify-between items-center mb-2">
                                                 <label className="block text-sm text-gray-400">Breakfast</label>
-                                                <VoiceInput onResult={(t) => handleVoiceResult('diet_breakfast', t)} />
+                                                <div className="flex gap-2">
+                                                    <TTSButton text="What do you usually eat for breakfast?" label="Breakfast" language={ttsLanguage} />
+                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_breakfast', t)} />
+                                                </div>
                                             </div>
                                             <AutoResizeTextarea
                                                 placeholder="What do you usually eat for breakfast?"
@@ -192,7 +241,10 @@ export default function AssessmentPage() {
                                             <div>
                                                 <div className="flex justify-between items-center mb-2">
                                                     <label className="block text-sm text-gray-400">Lunch</label>
-                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_lunch', t)} />
+                                                    <div className="flex gap-2">
+                                                        <TTSButton text="What do you usually eat for lunch?" label="Lunch" language={ttsLanguage} />
+                                                        <VoiceInput onResult={(t) => handleVoiceResult('diet_lunch', t)} />
+                                                    </div>
                                                 </div>
                                                 <AutoResizeTextarea
                                                     placeholder="Typical lunch..."
@@ -204,7 +256,10 @@ export default function AssessmentPage() {
                                             <div>
                                                 <div className="flex justify-between items-center mb-2">
                                                     <label className="block text-sm text-gray-400">Dinner</label>
-                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_dinner', t)} />
+                                                    <div className="flex gap-2">
+                                                        <TTSButton text="What do you usually eat for dinner?" label="Dinner" language={ttsLanguage} />
+                                                        <VoiceInput onResult={(t) => handleVoiceResult('diet_dinner', t)} />
+                                                    </div>
                                                 </div>
                                                 <AutoResizeTextarea
                                                     placeholder="Typical dinner..."
@@ -219,7 +274,10 @@ export default function AssessmentPage() {
                                             <div>
                                                 <div className="flex justify-between items-center mb-2">
                                                     <label className="block text-sm text-gray-400">Snacks</label>
-                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_snacks', t)} />
+                                                    <div className="flex gap-2">
+                                                        <TTSButton text="What snacks do you have?" label="Snacks" language={ttsLanguage} />
+                                                        <VoiceInput onResult={(t) => handleVoiceResult('diet_snacks', t)} />
+                                                    </div>
                                                 </div>
                                                 <AutoResizeTextarea
                                                     placeholder="What snacks do you have?"
@@ -229,7 +287,10 @@ export default function AssessmentPage() {
                                                 />
                                             </div>
                                             <div>
-                                                <label className="block text-sm text-gray-400 mb-2">Snack Time</label>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm text-gray-400">Snack Time</label>
+                                                    <TTSButton text="What time do you have snacks?" label="Snack Time" language={ttsLanguage} />
+                                                </div>
                                                 <input
                                                     type="text"
                                                     className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -250,7 +311,10 @@ export default function AssessmentPage() {
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">When do you go to bed?</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm text-gray-400">When do you go to bed?</label>
+                                                <TTSButton text="When do you go to bed?" label="Bed Time" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., 10:30 PM"
@@ -260,7 +324,10 @@ export default function AssessmentPage() {
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">When do you get up?</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm text-gray-400">When do you get up?</label>
+                                                <TTSButton text="When do you get up?" label="Wake Up Time" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="text"
                                                 placeholder="e.g., 6:30 AM"
@@ -273,7 +340,10 @@ export default function AssessmentPage() {
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">How many glasses of water do you drink?</label>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm text-gray-400">How many glasses of water do you drink?</label>
+                                                <TTSButton text="How many glasses of water do you drink daily?" label="Water Intake" language={ttsLanguage} />
+                                            </div>
                                             <input
                                                 type="number" min="0"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
@@ -284,7 +354,10 @@ export default function AssessmentPage() {
                                         <div>
                                             <div className="flex justify-between items-center mb-2">
                                                 <label className="block text-sm text-gray-400">How much do you exercise?</label>
-                                                <VoiceInput onResult={(t) => handleVoiceResult('exercise_info', t)} />
+                                                <div className="flex gap-2">
+                                                    <TTSButton text="How much do you exercise?" label="Exercise" language={ttsLanguage} />
+                                                    <VoiceInput onResult={(t) => handleVoiceResult('exercise_info', t)} />
+                                                </div>
                                             </div>
                                             <input
                                                 type="text"
@@ -306,10 +379,13 @@ export default function AssessmentPage() {
                                     <div>
                                         <div className="flex justify-between items-center mb-2">
                                             <label className="block text-sm text-gray-400">Do you have any existing eye conditions?</label>
-                                            <VoiceInput onResult={(t) => handleVoiceResult('eye_condition', t)} />
+                                            <div className="flex gap-2">
+                                                <TTSButton text="Do you have any existing eye conditions?" label="Eye Conditions" language={ttsLanguage} />
+                                                <VoiceInput onResult={(t) => handleVoiceResult('eye_condition', t)} />
+                                            </div>
                                         </div>
                                         <AutoResizeTextarea
-                                            placeholder="Please describe any eye issues or conditions (multi-lingual support)"
+                                            placeholder="Please describe any eye issues or conditions"
                                             rows={3}
                                             value={formData.eye_condition || ''}
                                             onChange={(e) => updateForm('eye_condition', e.target.value)}
@@ -350,7 +426,10 @@ export default function AssessmentPage() {
                                     </div>
 
                                     <div>
-                                        <label className="block text-sm text-gray-400 mb-2">Describe any other symptoms (Optional AI analysis)</label>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm text-gray-400">Describe any other symptoms (Optional)</label>
+                                            <TTSButton text="Describe any other symptoms you are experiencing" label="Other Symptoms" language={ttsLanguage} />
+                                        </div>
                                         <textarea
                                             className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent h-24"
                                             placeholder="E.g., My eyes hurt after long coding sessions"
@@ -370,7 +449,10 @@ export default function AssessmentPage() {
                                     <div>
                                         <div className="flex justify-between items-center mb-2">
                                             <label className="block text-sm text-gray-400">Tell us about what you want to achieve...</label>
-                                            <VoiceInput onResult={(t) => handleVoiceResult('health_goals', t)} />
+                                            <div className="flex gap-2">
+                                                <TTSButton text="Tell us about what health goals you want to achieve" label="Health Goals" language={ttsLanguage} />
+                                                <VoiceInput onResult={(t) => handleVoiceResult('health_goals', t)} />
+                                            </div>
                                         </div>
                                         <AutoResizeTextarea
                                             placeholder="weight loss, fitness, reversing diabetes..."
