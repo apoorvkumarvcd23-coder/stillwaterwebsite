@@ -103,8 +103,10 @@ export default function AssessmentPage() {
                     
                     {/* Language Selector for TTS */}
                     <div className="mt-4 flex items-center gap-3">
-                        <label className="text-sm text-gray-400">🔊 Audio Language:</label>
+                        <label htmlFor="audio-language" className="text-sm text-gray-400">🔊 Audio Language:</label>
                         <select
+                            id="audio-language"
+                            title="Audio Language"
                             value={ttsLanguage}
                             onChange={(e) => setTtsLanguage(e.target.value)}
                             className="bg-background border border-cards p-2 rounded-lg text-sm focus:outline-none focus:border-accent text-gray-300"
@@ -140,6 +142,8 @@ export default function AssessmentPage() {
                                             </div>
                                             <input
                                                 type="number" min="1"
+                                                title="Age"
+                                                placeholder="Enter your age"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.age || ''}
                                                 onChange={(e) => updateForm('age', e.target.value)}
@@ -151,6 +155,7 @@ export default function AssessmentPage() {
                                                 <TTSButton text="Select your gender" label="Gender" language={ttsLanguage} />
                                             </div>
                                             <select
+                                                title="Gender"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.gender || ''}
                                                 onChange={(e) => updateForm('gender', e.target.value)}
@@ -171,6 +176,8 @@ export default function AssessmentPage() {
                                             </div>
                                             <input
                                                 type="number" min="1"
+                                                title="Height"
+                                                placeholder="Enter your height"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.height || ''}
                                                 onChange={(e) => updateForm('height', e.target.value)}
@@ -183,6 +190,8 @@ export default function AssessmentPage() {
                                             </div>
                                             <input
                                                 type="number" min="1"
+                                                title="Weight"
+                                                placeholder="Enter your weight"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.weight || ''}
                                                 onChange={(e) => updateForm('weight', e.target.value)}
@@ -204,6 +213,7 @@ export default function AssessmentPage() {
                                                         value={occ}
                                                         checked={formData.occupation_type === occ}
                                                         onChange={(e) => updateForm('occupation_type', e.target.value)}
+                                                        title={occ}
                                                         className="accent-accent"
                                                     />
                                                     {occ}
@@ -346,6 +356,8 @@ export default function AssessmentPage() {
                                             </div>
                                             <input
                                                 type="number" min="0"
+                                                title="Water glasses per day"
+                                                placeholder="Number of glasses"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                                                 value={formData.water_glasses || ''}
                                                 onChange={(e) => updateForm('water_glasses', e.target.value)}
@@ -419,6 +431,8 @@ export default function AssessmentPage() {
                                                     className="accent-accent w-4 h-4"
                                                     checked={(formData.symptoms || []).includes(s)}
                                                     onChange={() => handleCheckbox('symptoms', s)}
+                                                    title={s}
+                                                    aria-label={s}
                                                 />
                                                 <span className="capitalize">{s}</span>
                                             </label>
@@ -433,6 +447,7 @@ export default function AssessmentPage() {
                                         <textarea
                                             className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent h-24"
                                             placeholder="E.g., My eyes hurt after long coding sessions"
+                                            title="Other symptoms"
                                             value={formData.symptom_text || ''}
                                             onChange={(e) => updateForm('symptom_text', e.target.value)}
                                         ></textarea>

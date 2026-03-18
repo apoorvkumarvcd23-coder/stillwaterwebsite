@@ -5,38 +5,37 @@ const router = express.Router();
 
 const { calculateRecommendation } = require("../services/recommendationEngine");
 
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+  if (typeof value === "string" && value.trim()) {
+    return [value.trim()];
+  }
+  return [];
+}
+
 // 1. Save Assessment
 router.post("/assessment", async (req, res) => {
   try {
-    const normalizeList = (value) => {
-      if (Array.isArray(value)) {
-        return value.map((item) => String(item).trim()).filter(Boolean);
-      }
-      if (typeof value === "string" && value.trim()) {
-        return [value.trim()];
-      }
-      return [];
-    };
-
     const {
       age,
       gender,
       height,
       weight,
       occupation_type,
-      screen_time_hours,
-      sleep_hours,
-      stress_level,
-      water_intake,
-      exercise_frequency,
-      diet_type,
-      alcohol_frequency,
-      smoking,
-      processed_food_frequency,
-      sugar_intake,
-      dairy_consumption,
-      goal_primary,
-      goal_secondary,
+      diet_breakfast,
+      diet_lunch,
+      diet_dinner,
+      diet_snacks,
+      diet_snacks_time,
+      bed_time,
+      wake_up_time,
+      water_glasses,
+      exercise_info,
+      eye_condition,
+      wears_spectacles,
+      health_goals,
       conditions,
       symptoms,
       goals,
@@ -52,20 +51,10 @@ router.post("/assessment", async (req, res) => {
       weight === undefined || weight === null || weight === ""
         ? 0
         : parseFloat(weight);
-    const parsedScreenTime =
-      screen_time_hours === undefined ||
-      screen_time_hours === null ||
-      screen_time_hours === ""
+    const parsedWaterGlasses =
+      water_glasses === undefined || water_glasses === null || water_glasses === ""
         ? 0
-        : parseInt(screen_time_hours, 10);
-    const parsedSleepHours =
-      sleep_hours === undefined || sleep_hours === null || sleep_hours === ""
-        ? 0
-        : parseInt(sleep_hours, 10);
-    const parsedStressLevel =
-      stress_level === undefined || stress_level === null || stress_level === ""
-        ? 0
-        : parseInt(stress_level, 10);
+        : parseInt(water_glasses, 10);
 
     const user = await prisma.user.create({
       data: {
@@ -74,29 +63,32 @@ router.post("/assessment", async (req, res) => {
         height: Number.isFinite(parsedHeight) ? parsedHeight : 0,
         weight: Number.isFinite(parsedWeight) ? parsedWeight : 0,
         occupation_type: occupation_type || "",
-        screen_time_hours: Number.isFinite(parsedScreenTime)
-          ? parsedScreenTime
-          : 0,
-        sleep_hours: Number.isFinite(parsedSleepHours) ? parsedSleepHours : 0,
-        stress_level: Number.isFinite(parsedStressLevel)
-          ? parsedStressLevel
-          : 0,
-        water_intake: water_intake || "",
-        exercise_frequency: exercise_frequency || "",
-        diet_type: diet_type || "",
-        alcohol_frequency: alcohol_frequency || "",
-        smoking: smoking || "",
-        processed_food_frequency: processed_food_frequency || "",
-        sugar_intake: sugar_intake || "",
-        dairy_consumption: dairy_consumption || "",
+        diet_breakfast: diet_breakfast || "",
+        diet_lunch: diet_lunch || "",
+        diet_dinner: diet_dinner || "",
+        diet_snacks: diet_snacks || "",
+        diet_snacks_time: diet_snacks_time || "",
+        bed_time: bed_time || "",
+        wake_up_time: wake_up_time || "",
+        water_glasses: Number.isFinite(parsedWaterGlasses) ? parsedWaterGlasses : 0,
+        exercise_info: exercise_info || "",
+        eye_condition: eye_condition || "",
+        wears_spectacles: !!wears_spectacles,
+        health_goals: health_goals || "",
         conditions: {
-          create: normalizeList(conditions).map((c) => ({ condition_name: c })),
+          create: normalizeList(conditions).map((condition) => ({
+            condition_name: condition,
+          })),
         },
         symptoms: {
-          create: normalizeList(symptoms).map((s) => ({ symptom_name: s })),
+          create: normalizeList(symptoms).map((symptom) => ({
+            symptom_name: symptom,
+          })),
         },
         goals: {
-          create: normalizeList(goals).map((g) => ({ goal_name: g })),
+          create: normalizeList(goals).map((goal) => ({
+            goal_name: goal,
+          })),
         },
       },
       include: {
@@ -109,9 +101,10 @@ router.post("/assessment", async (req, res) => {
     res.json({ success: true, userId: user.id });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({ error: "Failed to save assessment", details: error.message });
+    res.status(500).json({
+      error: "Failed to save assessment",
+      details: error.message,
+    });
   }
 });
 
@@ -119,13 +112,16 @@ router.post("/assessment", async (req, res) => {
 router.post("/leads", async (req, res) => {
   try {
     const { userId, name, email, phone } = req.body;
+
     if (!userId) {
       return res.status(400).json({ error: "Missing userId" });
     }
+
     await prisma.user.update({
       where: { id: parseInt(userId, 10) },
       data: { name, email, phone },
     });
+
     res.json({ success: true });
   } catch (error) {
     console.error(error);
@@ -138,7 +134,7 @@ router.post("/recommendation", async (req, res) => {
   try {
     const { userId } = req.body;
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(userId) },
+      where: { id: parseInt(userId, 10) },
       include: { conditions: true, symptoms: true, goals: true },
     });
 
@@ -156,7 +152,7 @@ router.post("/recommendation", async (req, res) => {
 router.get("/recommendation/:userId", async (req, res) => {
   try {
     const recommendation = await prisma.recommendation.findFirst({
-      where: { userId: parseInt(req.params.userId) },
+      where: { userId: parseInt(req.params.userId, 10) },
       orderBy: { createdAt: "desc" },
     });
 
@@ -169,19 +165,15 @@ router.get("/recommendation/:userId", async (req, res) => {
 });
 
 // 5. Admin Dashboard Analytics
-router.get("/admin/dashboard", async (req, res) => {
+router.get("/admin/dashboard", async (_req, res) => {
   try {
     const totalAssessments = await prisma.user.count();
-    const withEmails = await prisma.user.count({
-      where: { email: { not: null } },
-    });
+    const withEmails = await prisma.user.count({ where: { email: { not: null } } });
 
-    // Simplistic aggregations manually since SQLite lacks certain aggregations
-    // For Production / Postgres, you'd use groupBy. Let's use simple logic here.
     const conditions = await prisma.userCondition.findMany();
     const counts = {};
-    conditions.forEach((c) => {
-      counts[c.condition_name] = (counts[c.condition_name] || 0) + 1;
+    conditions.forEach((condition) => {
+      counts[condition.condition_name] = (counts[condition.condition_name] || 0) + 1;
     });
     const topConditions = Object.entries(counts)
       .sort((a, b) => b[1] - a[1])
@@ -194,8 +186,8 @@ router.get("/admin/dashboard", async (req, res) => {
         : 0,
       topConditions,
     });
-  } catch (e) {
-    console.error(e);
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ error: "Failed dashboard stats" });
   }
 });
