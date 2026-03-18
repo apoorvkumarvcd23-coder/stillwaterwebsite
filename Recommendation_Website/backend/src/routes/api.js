@@ -5,15 +5,27 @@ const router = express.Router();
 
 const { calculateRecommendation } = require('../services/recommendationEngine');
 
+const { extractHealthSignals } = require('../services/aiExtraction');
+
 // 1. Save Assessment
 router.post('/assessment', async (req, res) => {
     try {
         const {
-            age, gender, height, weight, occupation_type, screen_time_hours, sleep_hours,
-            stress_level, water_intake, exercise_frequency, diet_type, alcohol_frequency,
-            smoking, processed_food_frequency, sugar_intake, dairy_consumption, goal_primary, goal_secondary,
-            conditions, symptoms, goals
+            age, gender, height, weight, occupation_type,
+            diet_breakfast, diet_lunch, diet_dinner, diet_snacks, diet_snacks_time,
+            bed_time, wake_up_time, water_glasses, exercise_info,
+            eye_condition, wears_spectacles,
+            health_goals,
+            conditions: providedConditions, symptoms: providedSymptoms, goals: providedGoals
         } = req.body;
+
+        // Perform AI/Keyword extraction on free-text fields
+        const combinedText = `${eye_condition || ""} ${health_goals || ""}`;
+        const extracted = await extractHealthSignals(combinedText);
+
+        const conditions = Array.from(new Set([...(providedConditions || []), ...extracted.conditions]));
+        const symptoms = Array.from(new Set([...(providedSymptoms || []), ...extracted.symptoms]));
+        const goals = Array.from(new Set([...(providedGoals || []), ...extracted.goals]));
 
         const user = await prisma.user.create({
             data: {
@@ -22,25 +34,31 @@ router.post('/assessment', async (req, res) => {
                 height: height ? parseFloat(height) : 0,
                 weight: weight ? parseFloat(weight) : 0,
                 occupation_type: occupation_type || "",
-                screen_time_hours: screen_time_hours ? parseInt(screen_time_hours) : 0,
-                sleep_hours: sleep_hours ? parseInt(sleep_hours) : 0,
-                stress_level: stress_level ? parseInt(stress_level) : 0,
-                water_intake: water_intake || "",
-                exercise_frequency: exercise_frequency || "",
-                diet_type: diet_type || "",
-                alcohol_frequency: alcohol_frequency || "",
-                smoking: smoking || "",
-                processed_food_frequency: processed_food_frequency || "",
-                sugar_intake: sugar_intake || "",
-                dairy_consumption: dairy_consumption || "",
+                // Diet
+                diet_breakfast: diet_breakfast || "",
+                diet_lunch: diet_lunch || "",
+                diet_dinner: diet_dinner || "",
+                diet_snacks: diet_snacks || "",
+                diet_snacks_time: diet_snacks_time || "",
+                // Lifestyle
+                bed_time: bed_time || "",
+                wake_up_time: wake_up_time || "",
+                water_glasses: water_glasses ? parseInt(water_glasses) : 0,
+                exercise_info: exercise_info || "",
+                // Eye Health
+                eye_condition: eye_condition || "",
+                wears_spectacles: !!wears_spectacles,
+                // Goals
+                health_goals: health_goals || "",
+
                 conditions: {
-                    create: (conditions || []).map(c => ({ condition_name: c }))
+                    create: conditions.map(c => ({ condition_name: c }))
                 },
                 symptoms: {
-                    create: (symptoms || []).map(s => ({ symptom_name: s }))
+                    create: symptoms.map(s => ({ symptom_name: s }))
                 },
                 goals: {
-                    create: (goals || []).map(g => ({ goal_name: g }))
+                    create: goals.map(g => ({ goal_name: g }))
                 }
             },
             include: {

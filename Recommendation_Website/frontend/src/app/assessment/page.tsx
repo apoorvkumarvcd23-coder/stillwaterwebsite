@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import ProgressBar from '@/components/ProgressBar';
+import VoiceInput from '@/components/VoiceInput';
+import AutoResizeTextarea from '@/components/AutoResizeTextarea';
 
 const SECTIONS = [
     'Basic Info', 'Diet', 'Lifestyle', 'Health Conditions', 'Symptoms', 'Goals'
@@ -26,9 +28,21 @@ export default function AssessmentPage() {
     }, []);
 
     const updateForm = (key: string, value: any) => {
-        const newData = { ...formData, [key]: value };
-        setFormData(newData);
-        localStorage.setItem('wellness_assessment', JSON.stringify(newData));
+        setFormData((prev: any) => {
+            const newData = { ...prev, [key]: value };
+            localStorage.setItem('wellness_assessment', JSON.stringify(newData));
+            return newData;
+        });
+    };
+
+    const handleVoiceResult = (key: string, transcript: string) => {
+        setFormData((prev: any) => {
+            const currentVal = prev[key] || '';
+            const newVal = currentVal ? `${currentVal}. ${transcript}` : transcript;
+            const newData = { ...prev, [key]: newVal };
+            localStorage.setItem('wellness_assessment', JSON.stringify(newData));
+            return newData;
+        });
     };
 
     const nextStep = () => {
@@ -157,85 +171,73 @@ export default function AssessmentPage() {
                             {/* SECTION 2: DIET */}
                             {currentStep === 1 && (
                                 <div className="space-y-6">
-                                    <h2 className="text-2xl font-heading mb-6">Tell us about your diet</h2>
+                                    <h2 className="text-2xl font-heading mb-6">Tell us about your daily eating habits</h2>
+                                    <p className="text-gray-400 -mt-4 mb-6">Describe what and when you eat during a typical day.</p>
 
-                                    {/* Diet Type */}
-                                    <div>
-                                        <label className="block text-sm text-gray-400 mb-2">Diet Type</label>
-                                        <div className="flex gap-4 flex-wrap">
-                                            {['Vegan', 'Vegetarian', 'Non-vegetarian'].map(diet => (
-                                                <label key={diet} className="flex items-center gap-2 cursor-pointer bg-background p-3 rounded-lg border border-cards hover:border-accent transition-colors flex-1 min-w-[120px]">
-                                                    <input
-                                                        type="radio" name="diet" value={diet}
-                                                        checked={formData.diet_type === diet}
-                                                        onChange={(e) => updateForm('diet_type', e.target.value)}
-                                                        className="accent-accent"
-                                                    />
-                                                    {diet}
-                                                </label>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        {/* Processed Food */}
+                                    <div className="space-y-4">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Processed Food</label>
-                                            <select
-                                                className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.processed_food_frequency || ''}
-                                                onChange={(e) => updateForm('processed_food_frequency', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="Never">Never</option>
-                                                <option value="Weekly">Weekly</option>
-                                                <option value="Daily">Daily</option>
-                                            </select>
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm text-gray-400">Breakfast</label>
+                                                <VoiceInput onResult={(t) => handleVoiceResult('diet_breakfast', t)} />
+                                            </div>
+                                            <AutoResizeTextarea
+                                                placeholder="What do you usually eat for breakfast?"
+                                                rows={2}
+                                                value={formData.diet_breakfast || ''}
+                                                onChange={(e) => updateForm('diet_breakfast', e.target.value)}
+                                            />
                                         </div>
 
-                                        {/* Sugar */}
-                                        <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Sugar Intake</label>
-                                            <select
-                                                className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.sugar_intake || ''}
-                                                onChange={(e) => updateForm('sugar_intake', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="Low">Low</option>
-                                                <option value="Medium">Medium</option>
-                                                <option value="High">High</option>
-                                            </select>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm text-gray-400">Lunch</label>
+                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_lunch', t)} />
+                                                </div>
+                                                <AutoResizeTextarea
+                                                    placeholder="Typical lunch..."
+                                                    rows={2}
+                                                    value={formData.diet_lunch || ''}
+                                                    onChange={(e) => updateForm('diet_lunch', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm text-gray-400">Dinner</label>
+                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_dinner', t)} />
+                                                </div>
+                                                <AutoResizeTextarea
+                                                    placeholder="Typical dinner..."
+                                                    rows={2}
+                                                    value={formData.diet_dinner || ''}
+                                                    onChange={(e) => updateForm('diet_dinner', e.target.value)}
+                                                />
+                                            </div>
                                         </div>
 
-                                        {/* Dairy */}
-                                        <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Dairy Consumption</label>
-                                            <select
-                                                className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.dairy_consumption || ''}
-                                                onChange={(e) => updateForm('dairy_consumption', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="None">None</option>
-                                                <option value="Moderate">Moderate</option>
-                                                <option value="High">High</option>
-                                            </select>
-                                        </div>
-
-                                        {/* Alcohol */}
-                                        <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Alcohol Consumption</label>
-                                            <select
-                                                className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.alcohol_frequency || ''}
-                                                onChange={(e) => updateForm('alcohol_frequency', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="None">None</option>
-                                                <option value="Occasional">Occasional</option>
-                                                <option value="Frequent">Frequent</option>
-                                            </select>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <div className="flex justify-between items-center mb-2">
+                                                    <label className="block text-sm text-gray-400">Snacks</label>
+                                                    <VoiceInput onResult={(t) => handleVoiceResult('diet_snacks', t)} />
+                                                </div>
+                                                <AutoResizeTextarea
+                                                    placeholder="What snacks do you have?"
+                                                    rows={2}
+                                                    value={formData.diet_snacks || ''}
+                                                    onChange={(e) => updateForm('diet_snacks', e.target.value)}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm text-gray-400 mb-2">Snack Time</label>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
+                                                    placeholder="e.g., 4 PM, 11 AM"
+                                                    value={formData.diet_snacks_time || ''}
+                                                    onChange={(e) => updateForm('diet_snacks_time', e.target.value)}
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -248,83 +250,82 @@ export default function AssessmentPage() {
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Sleep hours (per night)</label>
+                                            <label className="block text-sm text-gray-400 mb-2">When do you go to bed?</label>
                                             <input
-                                                type="number" min="0" max="24"
+                                                type="text"
+                                                placeholder="e.g., 10:30 PM"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.sleep_hours || ''}
-                                                onChange={(e) => updateForm('sleep_hours', e.target.value)}
+                                                value={formData.bed_time || ''}
+                                                onChange={(e) => updateForm('bed_time', e.target.value)}
                                             />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Screen time (hours per day)</label>
+                                            <label className="block text-sm text-gray-400 mb-2">When do you get up?</label>
                                             <input
-                                                type="number" min="0" max="24"
+                                                type="text"
+                                                placeholder="e.g., 6:30 AM"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.screen_time_hours || ''}
-                                                onChange={(e) => updateForm('screen_time_hours', e.target.value)}
+                                                value={formData.wake_up_time || ''}
+                                                onChange={(e) => updateForm('wake_up_time', e.target.value)}
                                             />
                                         </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm text-gray-400 mb-2">Stress Level: {formData.stress_level || 5} (1-10)</label>
-                                        <input
-                                            type="range" min="1" max="10"
-                                            className="w-full accent-accent"
-                                            value={formData.stress_level || 5}
-                                            onChange={(e) => updateForm('stress_level', e.target.value)}
-                                        />
                                     </div>
 
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Water intake</label>
-                                            <select
+                                            <label className="block text-sm text-gray-400 mb-2">How many glasses of water do you drink?</label>
+                                            <input
+                                                type="number" min="0"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.water_intake || ''}
-                                                onChange={(e) => updateForm('water_intake', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="Low (1L)">Low (&lt;1L)</option>
-                                                <option value="Medium (2L)">Medium (~2L)</option>
-                                                <option value="High (3L+)">High (3L+)</option>
-                                            </select>
+                                                value={formData.water_glasses || ''}
+                                                onChange={(e) => updateForm('water_glasses', e.target.value)}
+                                            />
                                         </div>
                                         <div>
-                                            <label className="block text-sm text-gray-400 mb-2">Exercise frequency</label>
-                                            <select
+                                            <div className="flex justify-between items-center mb-2">
+                                                <label className="block text-sm text-gray-400">How much do you exercise?</label>
+                                                <VoiceInput onResult={(t) => handleVoiceResult('exercise_info', t)} />
+                                            </div>
+                                            <input
+                                                type="text"
+                                                placeholder="e.g., 30 min daily, walk 2km"
                                                 className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
-                                                value={formData.exercise_frequency || ''}
-                                                onChange={(e) => updateForm('exercise_frequency', e.target.value)}
-                                            >
-                                                <option value="">Select...</option>
-                                                <option value="None">None</option>
-                                                <option value="1-2 times/week">1-2 times/week</option>
-                                                <option value="3+ times/week">3+ times/week</option>
-                                            </select>
+                                                value={formData.exercise_info || ''}
+                                                onChange={(e) => updateForm('exercise_info', e.target.value)}
+                                            />
                                         </div>
                                     </div>
                                 </div>
                             )}
 
-                            {/* SECTION 4: HEALTH CONDITIONS */}
+                            {/* SECTION 4: EYE HEALTH */}
                             {currentStep === 3 && (
                                 <div className="space-y-6">
-                                    <h2 className="text-2xl font-heading mb-6">Select any existing conditions</h2>
+                                    <h2 className="text-2xl font-heading mb-6">Eye Health</h2>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {['Diabetes', 'Heart disease', 'Obesity', 'Autoimmune disease', 'Myopia', 'Hyperopia', 'Eye strain', 'Chronic pain', 'Sleep disorder', 'Anxiety', 'Fatigue', 'Digestive issues', 'None'].map(condition => (
-                                            <label key={condition} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-white/5 rounded transition-colors">
-                                                <input
-                                                    type="checkbox"
-                                                    className="accent-accent w-4 h-4"
-                                                    checked={(formData.conditions || []).includes(condition)}
-                                                    onChange={() => handleCheckbox('conditions', condition)}
-                                                />
-                                                {condition}
-                                            </label>
-                                        ))}
+                                    <div>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm text-gray-400">Do you have any existing eye conditions?</label>
+                                            <VoiceInput onResult={(t) => handleVoiceResult('eye_condition', t)} />
+                                        </div>
+                                        <AutoResizeTextarea
+                                            placeholder="Please describe any eye issues or conditions (multi-lingual support)"
+                                            rows={3}
+                                            value={formData.eye_condition || ''}
+                                            onChange={(e) => updateForm('eye_condition', e.target.value)}
+                                        />
+                                    </div>
+
+                                    <div className="bg-background p-4 rounded-lg border border-cards">
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="accent-accent w-5 h-5"
+                                                checked={formData.wears_spectacles || false}
+                                                onChange={(e) => updateForm('wears_spectacles', e.target.checked)}
+                                            />
+                                            <span className="text-sm md:text-base">I wear spectacles</span>
+                                        </label>
                                     </div>
                                 </div>
                             )}
@@ -363,25 +364,20 @@ export default function AssessmentPage() {
                             {/* SECTION 6: GOALS */}
                             {currentStep === 5 && (
                                 <div className="space-y-6">
-                                    <h2 className="text-2xl font-heading mb-6">What are your primary goals? (Select up to 3)</h2>
+                                    <h2 className="text-2xl font-heading mb-6">What are your health goals?</h2>
+                                    <p className="text-gray-400 -mt-4">E.g., weight loss, fitness, reversing diabetes, better vision...</p>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                                        {['lose weight', 'reverse disease', 'improve vision', 'reduce stress', 'sleep better', 'detox', 'increase energy'].map(goal => {
-                                            const isSelected = (formData.goals || []).includes(goal);
-                                            const isMaxReached = (formData.goals || []).length >= 3;
-                                            return (
-                                                <label key={goal} className={`flex items-center gap-3 cursor-pointer p-2 rounded transition-colors ${isSelected ? 'bg-white/10' : 'hover:bg-white/5'} ${!isSelected && isMaxReached ? 'opacity-50 cursor-not-allowed' : ''}`}>
-                                                    <input
-                                                        type="checkbox"
-                                                        className="accent-accent w-4 h-4"
-                                                        checked={isSelected}
-                                                        disabled={!isSelected && isMaxReached}
-                                                        onChange={() => handleCheckbox('goals', goal)}
-                                                    />
-                                                    <span className="capitalize">{goal}</span>
-                                                </label>
-                                            );
-                                        })}
+                                    <div>
+                                        <div className="flex justify-between items-center mb-2">
+                                            <label className="block text-sm text-gray-400">Tell us about what you want to achieve...</label>
+                                            <VoiceInput onResult={(t) => handleVoiceResult('health_goals', t)} />
+                                        </div>
+                                        <AutoResizeTextarea
+                                            placeholder="weight loss, fitness, reversing diabetes..."
+                                            rows={4}
+                                            value={formData.health_goals || ''}
+                                            onChange={(e) => updateForm('health_goals', e.target.value)}
+                                        />
                                     </div>
                                 </div>
                             )}

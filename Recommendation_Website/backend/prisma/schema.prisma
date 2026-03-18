@@ -21,17 +21,27 @@ model User {
   height                   Float              @default(0)
   weight                   Float              @default(0)
   occupation_type          String             @default("")
-  screen_time_hours        Int                @default(0)
-  sleep_hours              Int                @default(0)
-  stress_level             Int                @default(0)
-  water_intake             String             @default("")
-  exercise_frequency       String             @default("")
-  diet_type                String             @default("")
-  alcohol_frequency        String             @default("")
-  smoking                  String             @default("")
-  processed_food_frequency String             @default("")
-  sugar_intake             String             @default("")
-  dairy_consumption        String             @default("")
+  
+  // Step 2: Diet
+  diet_breakfast           String             @default("")
+  diet_lunch               String             @default("")
+  diet_dinner              String             @default("")
+  diet_snacks              String             @default("")
+  diet_snacks_time         String             @default("")
+  
+  // Step 3: Lifestyle
+  bed_time                 String             @default("")
+  wake_up_time             String             @default("")
+  water_glasses            Int                @default(0)
+  exercise_info            String             @default("")
+  
+  // Step 4: Eye Health
+  eye_condition            String             @default("")
+  wears_spectacles         Boolean            @default(false)
+  
+  // Step 6: Goals
+  health_goals             String             @default("")
+
   conditions               UserCondition[]
   symptoms                 UserSymptom[]
   goals                    UserGoal[]

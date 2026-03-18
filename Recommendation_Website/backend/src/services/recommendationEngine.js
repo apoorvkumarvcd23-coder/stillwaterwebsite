@@ -24,7 +24,37 @@ async function calculateRecommendation(user) {
         } else if (rule.type === 'goal') {
             matched = (user.goals || []).some(g => g.goal_name.toLowerCase() === rule.attribute.toLowerCase());
         } else if (rule.type === 'lifestyle') {
-            const userVal = user[rule.attribute]; // e.g., user.stress_level
+            let userVal = user[rule.attribute];
+
+            // Inferences for new fields
+            if (rule.attribute === 'stress_level' && (userVal === 0 || userVal === undefined)) {
+                // Infer stress from extracted symptoms
+                const stressfulSymptoms = ['constant stress', 'burnout', 'insomnia', 'anxiety'];
+                const hasStress = user.symptoms.some(s => stressfulSymptoms.includes(s.symptom_name.toLowerCase()));
+                if (hasStress) userVal = 8; // High stress inference
+            }
+
+            if (rule.attribute === 'processed_food_frequency' && (!userVal || userVal === "")) {
+                // Infer from diet descriptions
+                const dietText = `${user.diet_breakfast} ${user.diet_lunch} ${user.diet_dinner} ${user.diet_snacks}`.toLowerCase();
+                if (dietText.includes('processed') || dietText.includes('packaged') || dietText.includes('junk') || dietText.includes('ready to eat')) {
+                    userVal = 'daily';
+                }
+            }
+
+            if (rule.attribute === 'screen_time_hours' && (userVal === 0 || userVal === undefined)) {
+                if (user.occupation_type === 'Desk job') userVal = 8;
+                else if (user.occupation_type === 'Student') userVal = 6;
+            }
+
+            if (rule.attribute === 'water_intake' && (!userVal || userVal === "")) {
+                if (user.water_glasses > 0) {
+                    if (user.water_glasses < 4) userVal = "Low (1L)";
+                    else if (user.water_glasses < 8) userVal = "Medium (2L)";
+                    else userVal = "High (3L+)";
+                }
+            }
+
             if (userVal !== undefined && userVal !== null) {
                 if (rule.operator === '>') {
                     matched = Number(userVal) > Number(rule.value);
