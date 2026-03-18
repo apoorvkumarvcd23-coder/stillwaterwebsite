@@ -8,76 +8,95 @@ const { calculateRecommendation } = require("../services/recommendationEngine");
 // 1. Save Assessment
 router.post("/assessment", async (req, res) => {
   try {
+    const normalizeList = (value) => {
+      if (Array.isArray(value)) {
+        return value.map((item) => String(item).trim()).filter(Boolean);
+      }
+      if (typeof value === "string" && value.trim()) {
+        return [value.trim()];
+      }
+      return [];
+    };
+
     const {
       age,
       gender,
       height,
       weight,
       occupation_type,
-      diet_breakfast,
-      diet_lunch,
-      diet_dinner,
-      diet_snacks,
-      diet_snacks_time,
-      bed_time,
-      wake_up_time,
-      water_glasses,
-      exercise_info,
-      eye_condition,
-      wears_spectacles,
-      health_goals,
-      conditions: providedConditions,
-      symptoms: providedSymptoms,
-      goals: providedGoals,
+      screen_time_hours,
+      sleep_hours,
+      stress_level,
+      water_intake,
+      exercise_frequency,
+      diet_type,
+      alcohol_frequency,
+      smoking,
+      processed_food_frequency,
+      sugar_intake,
+      dairy_consumption,
+      goal_primary,
+      goal_secondary,
+      conditions,
+      symptoms,
+      goals,
     } = req.body;
 
-    const normalizeToStringArray = (value) => {
-      if (Array.isArray(value)) {
-        return value.map((v) => String(v).trim()).filter(Boolean);
-      }
-      return [];
-    };
-
-    const conditions = Array.from(
-      new Set(normalizeToStringArray(providedConditions)),
-    );
-    const symptoms = Array.from(
-      new Set(normalizeToStringArray(providedSymptoms)),
-    );
-    const goals = Array.from(new Set(normalizeToStringArray(providedGoals)));
+    const parsedAge =
+      age === undefined || age === null || age === "" ? 0 : parseInt(age, 10);
+    const parsedHeight =
+      height === undefined || height === null || height === ""
+        ? 0
+        : parseFloat(height);
+    const parsedWeight =
+      weight === undefined || weight === null || weight === ""
+        ? 0
+        : parseFloat(weight);
+    const parsedScreenTime =
+      screen_time_hours === undefined ||
+      screen_time_hours === null ||
+      screen_time_hours === ""
+        ? 0
+        : parseInt(screen_time_hours, 10);
+    const parsedSleepHours =
+      sleep_hours === undefined || sleep_hours === null || sleep_hours === ""
+        ? 0
+        : parseInt(sleep_hours, 10);
+    const parsedStressLevel =
+      stress_level === undefined || stress_level === null || stress_level === ""
+        ? 0
+        : parseInt(stress_level, 10);
 
     const user = await prisma.user.create({
       data: {
-        age: parseInt(age) || 0,
+        age: Number.isFinite(parsedAge) ? parsedAge : 0,
         gender: gender || "",
-        height: parseFloat(height) || 0,
-        weight: parseFloat(weight) || 0,
+        height: Number.isFinite(parsedHeight) ? parsedHeight : 0,
+        weight: Number.isFinite(parsedWeight) ? parsedWeight : 0,
         occupation_type: occupation_type || "",
-        // Diet
-        diet_breakfast: diet_breakfast || "",
-        diet_lunch: diet_lunch || "",
-        diet_dinner: diet_dinner || "",
-        diet_snacks: diet_snacks || "",
-        diet_snacks_time: diet_snacks_time || "",
-        // Lifestyle
-        bed_time: bed_time || "",
-        wake_up_time: wake_up_time || "",
-        water_glasses: parseInt(water_glasses) || 0,
-        exercise_info: exercise_info || "",
-        // Eye Health
-        eye_condition: eye_condition || "",
-        wears_spectacles: !!wears_spectacles,
-        // Goals
-        health_goals: health_goals || "",
-
+        screen_time_hours: Number.isFinite(parsedScreenTime)
+          ? parsedScreenTime
+          : 0,
+        sleep_hours: Number.isFinite(parsedSleepHours) ? parsedSleepHours : 0,
+        stress_level: Number.isFinite(parsedStressLevel)
+          ? parsedStressLevel
+          : 0,
+        water_intake: water_intake || "",
+        exercise_frequency: exercise_frequency || "",
+        diet_type: diet_type || "",
+        alcohol_frequency: alcohol_frequency || "",
+        smoking: smoking || "",
+        processed_food_frequency: processed_food_frequency || "",
+        sugar_intake: sugar_intake || "",
+        dairy_consumption: dairy_consumption || "",
         conditions: {
-          create: conditions.map((c) => ({ condition_name: c })),
+          create: normalizeList(conditions).map((c) => ({ condition_name: c })),
         },
         symptoms: {
-          create: symptoms.map((s) => ({ symptom_name: s })),
+          create: normalizeList(symptoms).map((s) => ({ symptom_name: s })),
         },
         goals: {
-          create: goals.map((g) => ({ goal_name: g })),
+          create: normalizeList(goals).map((g) => ({ goal_name: g })),
         },
       },
       include: {
@@ -100,8 +119,11 @@ router.post("/assessment", async (req, res) => {
 router.post("/leads", async (req, res) => {
   try {
     const { userId, name, email, phone } = req.body;
+    if (!userId) {
+      return res.status(400).json({ error: "Missing userId" });
+    }
     await prisma.user.update({
-      where: { id: parseInt(userId) || 0 },
+      where: { id: parseInt(userId, 10) },
       data: { name, email, phone },
     });
     res.json({ success: true });

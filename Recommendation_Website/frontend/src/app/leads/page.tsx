@@ -52,7 +52,7 @@ export default function LeadsPage() {
         body: JSON.stringify({ userId, ...formData }),
       });
       if (!leadsRes.ok) {
-        throw new Error("Failed to save contact details");
+        throw new Error("Failed to save contact information");
       }
 
       // 4. Redirect to confirmation page
@@ -96,6 +96,7 @@ export default function LeadsPage() {
                   id="full-name"
                   type="text"
                   required
+                  title="Full Name"
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                   value={formData.name}
                   onChange={(e) =>
@@ -114,6 +115,8 @@ export default function LeadsPage() {
                   id="email-address"
                   type="email"
                   required
+                  title="Email Address"
+                  placeholder="you@example.com"
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                   value={formData.email}
                   onChange={(e) =>
@@ -132,6 +135,8 @@ export default function LeadsPage() {
                   id="phone-number"
                   type="tel"
                   required
+                  title="Phone Number"
+                  placeholder="9876543210"
                   className="w-full bg-background border border-cards p-3 rounded-lg focus:outline-none focus:border-accent"
                   value={formData.phone}
                   onChange={(e) =>
@@ -142,7 +147,7 @@ export default function LeadsPage() {
 
               <div className="pt-4">
                 <Button fullWidth type="submit" disabled={loading}>
-                  {loading ? "Analyzing Profile..." : "See My Results"}
+                  {loading ? "Saving Details..." : "Submit Details"}
                 </Button>
               </div>
             </form>
